@@ -8,6 +8,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 export class Layout extends React.Component {
+
     render() {
         return (
             <Container fluid>

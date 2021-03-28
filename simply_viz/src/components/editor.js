@@ -1,17 +1,20 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import "./editor.css";
 
 export class Editor extends React.Component {
+
   render() {
     return (
       <div>
-        <h1>This is the code space</h1>
+        <p className="codeSpace">
+          import math; <br />
+          function main (in: ) out: no ( <br />
+          int a = 4; <br />
+          int b = 3 <br />
+          int sum = a + b; <br />
+          print(sum); <br />)
+        </p>
       </div>
     );
-  };
+  }
 }
-
-ReactDOM.render(
-    <Editor />,
-    document.getElementById('root')
-);

@@ -1,9 +1,9 @@
 .codeSpace {
-    margin: 0.25rem;
-    border-color: #8595EA;
     border: solid;
-    border-radius: 0.5rem;
-    padding: 0.25rem;
+    border-radius: 1rem;
+    border-color: #8595EA;
+    margin: 0.5rem;
+    padding: 0.5rem;
 }
 
 .block {

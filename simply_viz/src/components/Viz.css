@@ -1,0 +1,47 @@
+.Table-function {
+    background-color: #8595EA;
+    font-style: normal;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    border-radius: 1rem;
+    text-align: left;
+    text-emphasis-color: white;
+}
+
+.Table-variable {
+    background-color: #006ACB;
+    font-style: normal;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    border-radius: 1rem;
+    text-align: left;
+    text-emphasis-color: white;
+}
+
+.Table-condition {
+    background-color: #99DA2E;
+    font-style: normal;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    border-radius: 1rem;
+    text-align: left;
+    text-emphasis-color: white;
+}
+
+.Table-loop {
+    background-color: #FA9D63;
+    font-style: normal;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    border-radius: 1rem;
+    text-align: left;
+    text-emphasis-color: white;
+}
+
+.Program-area, .Input, .Output, .External-lib, .Visual-space {
+    border: solid;
+    border-radius: 1rem;
+    border-color: #8595EA;
+    margin: 0.5rem;
+    padding: 0.5rem;
+}
+
+th {
+    padding: 0rem;
+}

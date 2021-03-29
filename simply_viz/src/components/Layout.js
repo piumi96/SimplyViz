@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Editor } from './editor';
-import { Viz } from './Viz';
+import {Editor} from './editor';
+import {Viz} from './Viz';
+import {CommentBox} from './commentBox';
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -9,13 +10,11 @@ import Col from 'react-bootstrap/Col';
 import Navbar from "react-bootstrap/Navbar";
 import Nav from 'react-bootstrap/Nav';
 
-
 export class Layout extends React.Component {
-
     render() {
         return (
           <div>
-            <Navbar variant="dark" style={{backgroundColor: '#6600C5'}}>
+            <Navbar variant="dark" style={{ backgroundColor: "#6600C5" }}>
               <Navbar.Brand href="#home">Navbar</Navbar.Brand>
               <Nav className="mr-auto">
                 <Nav.Link href="#home">Home</Nav.Link>
@@ -24,15 +23,18 @@ export class Layout extends React.Component {
               </Nav>
             </Navbar>
             <br />
-            <Container fluid>
+            <Container fluid style={{ padding: "0.25rem", margin: "0.5rem" }}>
               <Row>
                 <Col xs md lg={4}>
-                  {" "}
-                  <Editor />{" "}
+                  <Row>
+                    <Editor />
+                  </Row>
+                  <Row>
+                    <CommentBox />
+                  </Row>
                 </Col>
                 <Col>
-                  {" "}
-                  <Viz />{" "}
+                  <Viz />
                 </Col>
               </Row>
             </Container>

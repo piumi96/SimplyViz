@@ -1,9 +1,11 @@
 import React from "react";
 import "./codeSpace.css";
+import alien from './assets/alien.png';
 
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
+import Button from "react-bootstrap/Button";
 
 export class CodeSpace extends React.Component {
   render() {
@@ -24,8 +26,23 @@ export class CodeSpace extends React.Component {
         </ol>
 
         <Row>
+          <Col className="col-3 pl-1 pr-1">
+            <Button className="btn btn-md btn-primary mb-3">Back</Button>
+          </Col>
+          <Col className="col-3 pl-1 pr-1">
+            <Button className="btn btn-md btn-primary mb-3">Stop</Button>
+          </Col>
+          <Col className="col-3 pl-1 pr-1">
+            <Button className="btn btn-md btn-primary mb-3">Start</Button>
+          </Col>
+          <Col className="col-3 pl-1 pr-1">
+            <Button className="btn btn-md btn-primary mb-3">Next</Button>
+          </Col>
+        </Row>
+
+        <Row>
           <Col className="col-2">
-            <img src="/codeSpace/assets/alien.png" alt="alien"></img>
+            <img className="img-alien" src={alien} alt="alien"></img>
           </Col>
           <Col className="col-10">
             <Card

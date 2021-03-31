@@ -23,7 +23,7 @@ export class VisualizerSpace extends React.Component {
             <p class="p text-center py-1 p-box">External Libraries</p>
           </Col>
         </Row>
-        <Row className="row-scroll">
+        <Row>
           <Col className="col-12">
             <div className="p text-center p-3 p-box">
               <Row>

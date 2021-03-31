@@ -1,3 +1,13 @@
 h3 {
     font-weight: 800;
 }
+
+.img-alien {
+    width: 5rem;
+    height: 5rem;
+    margin-left: -50px;
+}
+
+.btn {
+    background-color: #8595EA !important;
+}

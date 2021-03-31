@@ -2,8 +2,8 @@ h3 {
     font-weight: 800;
 }
 
-.row-scroll {
-    overflow-y: scroll;
+th, td {
+    padding: 0.25rem !important;
 }
 
 .p-box {

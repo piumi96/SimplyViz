@@ -1,0 +1,39 @@
+h3 {
+    font-weight: 800;
+}
+
+.row-scroll {
+    overflow-y: scroll;
+}
+
+.p-box {
+    border-width:3px;
+    border: solid;
+    border-color:  #8595EA; 
+    border-radius: 5px;
+}
+
+.table-outer {
+    border-radius: 5px !important;
+}
+
+.table-func {
+    background-color: #8595EA;
+    text-align:left;
+}
+
+.table-var {
+    background-color: #006ACB; 
+    text-align:left;
+}
+
+.table-if {
+    background-color: #99DA2E; 
+    text-align:left;
+}
+
+.table-loop {
+    background-color: #FA9D63;
+    text-align:left;
+}
+

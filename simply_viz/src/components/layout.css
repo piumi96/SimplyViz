@@ -1,0 +1,10 @@
+.outer {
+    border-width: 10px;
+    border: solid;
+    border-color: #CDD4F6;
+    border-radius: 10px;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+}

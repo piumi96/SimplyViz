@@ -8,21 +8,28 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 
 export class CodeSpace extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      code: [
+        "function main(in: ) out: no {",
+        "int a = 3;",
+        "int b = 4;",
+        "int sum = a + b;",
+        "print(sum);",
+        "}"
+      ]
+    }
+  };
+
   render() {
     return (
       <div>
         <h3 className="h3 text-center pb-3">Code</h3>
         <ol>
-          <li>function main(in: ) out: no (</li>
-          <li>int a = 4;</li>
-          <li>int b = 3</li>
-          <li>int sum = a + b;</li>
-          <li>print(sum);</li>
-          <li>);</li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
+          {this.state.code.map((line) => (
+            <li> {line} </li>
+          ))}
         </ol>
 
         <Row>

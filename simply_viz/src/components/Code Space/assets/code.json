@@ -1,0 +1,15 @@
+[
+  { "Line": "Debuggee:3", "Function": "main", "Value": {} },
+  { "Line": "Debuggee:4", "Function": "main", "Value": { "a": 3 } },
+  { "Line": "Debuggee:5", "Function": "main", "Value": { "a": 3, "b": 4 } },
+  {
+    "Line": "Debuggee:6",
+    "Function": "main",
+    "Value": { "a": 3, "b": 4, "sum": 7 }
+  },
+  {
+    "Line": "Debuggee:7",
+    "Function": "main",
+    "Value": { "a": 3, "b": 4, "sum": 7 }
+  }
+]

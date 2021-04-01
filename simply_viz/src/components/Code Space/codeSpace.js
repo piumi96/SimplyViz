@@ -1,6 +1,8 @@
 import React from "react";
+//import {useEffect, useState} from 'react';
 import "./codeSpace.css";
 import alien from './assets/alien.png';
+//import codeObj from './assets/code.json';
 
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -10,6 +12,18 @@ import Button from "react-bootstrap/Button";
 export class CodeSpace extends React.Component {
   constructor() {
     super();
+    /*const [initialState, setInitialState] = useState([]);
+
+    useEffect(() => {
+      fetch("/api/")
+        .then((res) => {
+          if (res.ok) {
+            return res.json;
+          }
+        })
+        .then(jsonResponse => console.log(jsonResponse))
+    }, []); */
+
     this.state = {
       code: [
         "function main(in: ) out: no {",
@@ -23,6 +37,9 @@ export class CodeSpace extends React.Component {
   };
 
   render() {
+    var data = require('./assets/code.json');
+    console.log(data);
+    
     return (
       <div>
         <h3 className="h3 text-center pb-3">Code</h3>

@@ -15,3 +15,7 @@ h3 {
 .highlight {
     background-color: #FEE494;
 }
+
+.not-highlight {
+    background-color: white;
+}

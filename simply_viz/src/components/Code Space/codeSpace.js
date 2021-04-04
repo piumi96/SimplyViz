@@ -1,8 +1,6 @@
 import React from "react";
-//import {useEffect, useState} from 'react';
 import "./codeSpace.css";
 import alien from "./assets/alien.png";
-//import codeObj from './assets/code.json';
 
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -15,8 +13,8 @@ var currentLine = 0;
 var codeOrder;
 
 export class CodeSpace extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
       code: [
@@ -28,9 +26,17 @@ export class CodeSpace extends React.Component {
         "}",
       ],
       currentLine: 0,
+      lineData: [],
     };
-    this.onClickNext = this.onClickNext.bind(this);
 
+    this.onClickNext = this.onClickNext.bind(this);
+    this.onClickBack = this.onClickBack.bind(this);
+
+    this.mapCodeOrder();
+
+  }
+
+  mapCodeOrder() {
     codeOrder = [];
     data.map((obj) => {
       var line = sourceMap.filter(
@@ -38,13 +44,17 @@ export class CodeSpace extends React.Component {
       );
       codeOrder.push(line[0].Simply - 1);
     });
-
-    console.log(codeOrder);
   }
 
   onClickNext() {
-    this.visualizeData(currentLine);
+    this.onVisualizeData(currentLine);
     currentLine++;
+    this.setState({ currentLine: currentLine });
+  }
+
+  onClickBack() {
+    this.onVisualizeData(currentLine);
+    currentLine--;
     this.setState({ currentLine: currentLine });
   }
 
@@ -52,35 +62,41 @@ export class CodeSpace extends React.Component {
     return currentLine === codeOrder[i] ? "highlight" : "not-highlight";
   }
 
-  visualizeData(sourceLine) {
-    var source = sourceMap.filter((i) => i.Simply === sourceLine+1);
-    if(source){
-      var lineData = data.filter((i) => parseInt(i.Line.slice(9)) === source[0].Java);
-    }
-    if(lineData.length !== 0){
-      var func = lineData[0].Function;
-      var values = lineData[0].Value;
-      /* console.log(func);
-      console.log(values); */
+  onVisualizeData(sourceLine) {
+    var source = sourceMap.filter((i) => i.Simply === sourceLine + 1);
+    if (source) {
+      var lineData = data.filter(
+        (i) => parseInt(i.Line.slice(9)) === source[0].Java
+      );
+      this.handleVisualize(lineData);
+      this.setState({ lineData: lineData });
     }
     
+    //console.log(this.state.lineData);
+  }
 
+  handleVisualize(data) {
+    this.props.getCodeData(data);
   }
 
   render() {
-
     return (
       <div>
         <h3 className="h3 text-center pb-3">Code</h3>
         <ol>
           {this.state.code.map((line, i) => (
-            <li className={this.getClassName(i)}>{line} </li>
+            <li className={this.getClassName(i)} key={i}>{line} </li>
           ))}
         </ol>
 
         <Row>
           <Col className="col-3 pl-1 pr-1">
-            <Button className="btn btn-md btn-primary mb-3">Back</Button>
+            <Button
+              className="btn btn-md btn-primary mb-3"
+              onClick={this.onClickBack}
+            >
+              Back
+            </Button>
           </Col>
           <Col className="col-3 pl-1 pr-1">
             <Button className="btn btn-md btn-primary mb-3">Stop</Button>

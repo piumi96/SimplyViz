@@ -12,7 +12,21 @@ import Col from "react-bootstrap/Container";
 import Navbar from "react-bootstrap/Navbar";
 
 export class Layout extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      codeData: [],
+    };
+
+    this.handleCodeData = this.handleCodeData.bind(this);
+  }
+
+  handleCodeData(data) {
+    this.setState({codeData: data});
+  }
+
   render() {
+    const {data} = this.state;
     return (
       <div>
         <MetaTags>
@@ -37,10 +51,10 @@ export class Layout extends React.Component {
         <Container className="container container-fluid">
           <Row className="row p-2">
             <Col className="col-3 m-2 p-3 outer">
-              <CodeSpace />
+              <CodeSpace getCodeData={this.handleCodeData} />
             </Col>
             <Col className="col-8 m-2 p-3 outer">
-              <VisualizerSpace />
+              <VisualizerSpace getCodeData={data} />
             </Col>
           </Row>
         </Container>

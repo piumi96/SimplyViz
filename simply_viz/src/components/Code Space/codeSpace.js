@@ -68,15 +68,15 @@ export class CodeSpace extends React.Component {
       var lineData = data.filter(
         (i) => parseInt(i.Line.slice(9)) === source[0].Java
       );
-      this.handleVisualize(lineData);
+      this.handleVisualize(lineData, currentLine);
       this.setState({ lineData: lineData });
     }
     
     //console.log(this.state.lineData);
   }
 
-  handleVisualize(data) {
-    this.props.getCodeData(data);
+  handleVisualize(data, line) {
+    this.props.getCodeData(data, line);
   }
 
   render() {

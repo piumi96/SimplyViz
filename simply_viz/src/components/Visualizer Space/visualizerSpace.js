@@ -6,7 +6,15 @@ import Col from "react-bootstrap/Col";
 import Table from "react-bootstrap/Table";
 
 export class VisualizerSpace extends React.Component {
-  render() {
+  constructor(props){
+    super(props);
+    this.state = {
+      codeData: this.props.getCodeData,
+    }
+  }
+
+  render() { 
+    console.log(this.state.codeData);
     return (
       <div>
         <h3 class="h3 text-center pb-3">Visualization Panel</h3>

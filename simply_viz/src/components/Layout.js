@@ -16,17 +16,17 @@ export class Layout extends React.Component {
     super(props);
     this.state = {
       codeData: [],
+      lineNumber: 0,
     };
 
     this.handleCodeData = this.handleCodeData.bind(this);
   }
 
-  handleCodeData(data) {
-    this.setState({codeData: data});
+  handleCodeData(data, line) {
+    this.setState({codeData: data, lineNumber: line});
   }
 
   render() {
-    const {data} = this.state;
     return (
       <div>
         <MetaTags>
@@ -54,7 +54,10 @@ export class Layout extends React.Component {
               <CodeSpace getCodeData={this.handleCodeData} />
             </Col>
             <Col className="col-8 m-2 p-3 outer">
-              <VisualizerSpace getCodeData={data} />
+              <VisualizerSpace
+                getCodeData={this.state}
+                key={this.state.lineNumber}
+              />
             </Col>
           </Row>
         </Container>

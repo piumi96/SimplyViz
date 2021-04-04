@@ -5,30 +5,76 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Table from "react-bootstrap/Table";
 
+var imports = [];
+
 export class VisualizerSpace extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
-      codeData: this.props.getCodeData,
-    }
+      code: this.props.getCodeData.code,
+      codeData: this.props.getCodeData.codeData,
+      lineNumber: this.props.getCodeData.lineNumber,
+    };
+
+    this.getKeyIn = this.getKeyIn.bind(this);
+    this.getPrint = this.getPrint.bind(this);
+    this.getExternals = this.getExternals.bind(this);
+
   }
 
-  render() { 
-    console.log(this.state.codeData);
+  getKeyIn() {
+    return "none";
+  }
+
+  getPrint() {
+    var line = this.state.lineNumber;
+    var data = "";
+    if(line >= 0){
+      var code = this.state.code[line];
+      if(code.includes("print")){
+        data = this.state.codeData[0].Value.sum;
+      }
+    }
+    return data;
+  }
+
+  getExternals() {
+    var line = this.state.lineNumber;
+    var data = "";
+    if(line>=0){
+      var code = this.state.code[line];
+      if(code.includes("import")){
+        data = code.slice(7);
+      }
+    }
+    imports.push(data);
+    return imports;
+  }
+
+  render() {
     return (
       <div>
         <h3 class="h3 text-center pb-3">Visualization Panel</h3>
         <Row>
           <Col className="col-6">
-            <p className="p text-center p-box">Keyboard input:</p>
+            <p className="p text-center p-box">
+              Keyboard input: {this.getKeyIn()}
+            </p>
           </Col>
           <Col className="col-6">
-            <p className="p text-center p-box">Print</p>
+            <p className="p text-center p-box">Print: {this.getPrint()}</p>
           </Col>
         </Row>
         <Row>
           <Col className="col-12">
-            <p class="p text-center py-1 p-box">External Libraries</p>
+            <p class="p text-center py-1 p-box">
+              External Libraries:
+              <ol>
+                {this.getExternals().map((lib, i) => (
+                  <li key={i}>{lib}</li>
+                ))}
+              </ol>
+            </p>
           </Col>
         </Row>
         <Row>

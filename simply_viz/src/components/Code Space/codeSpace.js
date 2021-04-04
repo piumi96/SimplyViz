@@ -11,6 +11,7 @@ var data = require("./assets/code.json");
 var sourceMap = require("./assets/sourceMap.json");
 var currentLine = 0;
 var codeOrder;
+var next, back;
 
 export class CodeSpace extends React.Component {
   constructor(props) {
@@ -25,7 +26,7 @@ export class CodeSpace extends React.Component {
         "print(sum);",
         "}",
       ],
-      currentLine: 0,
+      currentLine: -1,
       lineData: [],
     };
 
@@ -33,7 +34,6 @@ export class CodeSpace extends React.Component {
     this.onClickBack = this.onClickBack.bind(this);
 
     this.mapCodeOrder();
-
   }
 
   mapCodeOrder() {
@@ -44,18 +44,28 @@ export class CodeSpace extends React.Component {
       );
       codeOrder.push(line[0].Simply - 1);
     });
+    next = back = currentLine;
   }
 
   onClickNext() {
-    this.onVisualizeData(currentLine);
-    currentLine++;
-    this.setState({ currentLine: currentLine });
+    var length = this.state.code.length-1;
+    if(next<length){
+      next++;
+      back = next;
+      currentLine = next;
+    }
+    this.onVisualizeData(currentLine-1);
+    this.setState({currentLine: currentLine-1});
   }
 
   onClickBack() {
-    this.onVisualizeData(currentLine);
-    currentLine--;
-    this.setState({ currentLine: currentLine });
+    if(back>1){
+      back--;
+      next = back;
+      currentLine = back;
+    }
+    this.onVisualizeData(currentLine - 1);
+    this.setState({ currentLine: currentLine - 1 });
   }
 
   getClassName(i) {
@@ -68,15 +78,15 @@ export class CodeSpace extends React.Component {
       var lineData = data.filter(
         (i) => parseInt(i.Line.slice(9)) === source[0].Java
       );
-      this.handleVisualize(lineData, currentLine);
+      this.handleVisualize(lineData, currentLine-1, this.state.code);
       this.setState({ lineData: lineData });
     }
-    
+
     //console.log(this.state.lineData);
   }
 
-  handleVisualize(data, line) {
-    this.props.getCodeData(data, line);
+  handleVisualize(data, line, code) {
+    this.props.getCodeData(data, line, code);
   }
 
   render() {
@@ -85,7 +95,9 @@ export class CodeSpace extends React.Component {
         <h3 className="h3 text-center pb-3">Code</h3>
         <ol>
           {this.state.code.map((line, i) => (
-            <li className={this.getClassName(i)} key={i}>{line} </li>
+            <li className={this.getClassName(i)} key={i}>
+              {line}{" "}
+            </li>
           ))}
         </ol>
 

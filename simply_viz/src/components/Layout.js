@@ -15,15 +15,16 @@ export class Layout extends React.Component {
   constructor(props){
     super(props);
     this.state = {
+      code: [],
       codeData: [],
-      lineNumber: 0,
+      lineNumber: -1,
     };
 
     this.handleCodeData = this.handleCodeData.bind(this);
   }
 
-  handleCodeData(data, line) {
-    this.setState({codeData: data, lineNumber: line});
+  handleCodeData(data, line, code) {
+    this.setState({code: code, codeData: data, lineNumber: line});
   }
 
   render() {

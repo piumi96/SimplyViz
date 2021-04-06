@@ -7,6 +7,7 @@ import Table from "react-bootstrap/Table";
 
 var imports = [];
 var functions = [];
+var variables = [];
 var dataTypes = ["int", "float", "boolean", "string"];
 
 export class VisualizerSpace extends React.Component {
@@ -19,11 +20,13 @@ export class VisualizerSpace extends React.Component {
     };
 
     imports = [];
+    variables = [];
 
     this.getKeyIn = this.getKeyIn.bind(this);
     this.getPrint = this.getPrint.bind(this);
     this.getExternals = this.getExternals.bind(this);
     this.getFunctions = this.getFunctions.bind(this);
+    this.getVariables = this.getVariables.bind(this);
 
     this.getFunctions();
   }
@@ -92,30 +95,44 @@ export class VisualizerSpace extends React.Component {
           name: name,
           in: inputData,
           out: fout,
-          value: null
+          value: null,
         };
         functions.push(data);
       }
     }
-    //console.log(functions);
     return functions;
   }
 
-  getvariables(){
+  getVariables() {
+    var line = this.state.lineNumber;
+    if (line > 0) {
+      var codeData = this.state.codeData[0].Value;
+      var data = [];
+      for (var key in codeData) {
+        data.push({
+          name: key,
+          value: codeData[key],
+        });
+      }
 
+      variables.push({
+        line: line,
+        data: data,
+      });
+      
+      console.log(variables);
+      return variables;
+    }
   }
 
-  getConditions(){
+  getConditions() {}
 
-  }
-
-  getLoops(){
-    
-  }
+  getLoops() {}
 
   render() {
     return (
       <div>
+
         <h3 class="h3 text-center pb-3">Visualization Panel</h3>
         <Row>
           <Col className="col-6">
@@ -169,32 +186,32 @@ export class VisualizerSpace extends React.Component {
                               <td colspan="1">In</td>
                               <td colspan="1">
                                 {func.in.map((obj) => (
-                                  <text>
+                                  <p>
                                     {obj.type}
                                     <br />
-                                  </text>
+                                  </p>
                                 ))}
                               </td>
                               <td colspan="1">
                                 {func.in.map((obj) => (
-                                  <text>
+                                  <p>
                                     {obj.name}
                                     <br />
-                                  </text>
+                                  </p>
                                 ))}
                               </td>
                               <td colspan="1">
                                 {func.in.map((obj) => (
-                                  <text>
+                                  <p>
                                     {obj.value}
                                     <br />
-                                  </text>
+                                  </p>
                                 ))}
                               </td>
                             </tr>
                             <tr>
                               <td colspan="1">Out</td>
-                                <td colspan="1">{func.out}</td>
+                              <td colspan="1">{func.out}</td>
                               <td colspan="1"></td>
                               <td colspan="1"></td>
                             </tr>
@@ -218,17 +235,15 @@ export class VisualizerSpace extends React.Component {
                               <td colspan="2">Name</td>
                               <td colspan="2">Value</td>
                             </tr>
-                            <tr>
-                              <td colspan="2" rowspan="2">
-                                int
-                              </td>
-                              <td colspan="2" rowspan="2">
-                                i
-                              </td>
-                              <td colspan="2" rowspan="2">
-                                0
-                              </td>
-                            </tr>
+                            {this.getVariables().map((line) =>
+                              line.data.map((data, i) => (
+                                <tr key={i}>
+                                  <td colspan="2"></td>
+                                  <td colspan="2">{data.name}</td>
+                                  <td colspan="2">{data.value}</td>
+                                </tr>
+                              ))
+                            )}
                           </tbody>
                         </Table>
                       </div>

@@ -22,8 +22,10 @@ export class CodeSpace extends React.Component {
         "function main(in: int a, int b) out: no {",
         "int a = 3;",
         "int b = 4;",
+        "if(a<b){",
         "int sum = a + b;",
         "print(sum);",
+        "}",
         "}",
       ],
       currentLine: -1,
@@ -74,7 +76,7 @@ export class CodeSpace extends React.Component {
 
   onVisualizeData(sourceLine) {
     var source = sourceMap.filter((i) => i.Simply === sourceLine + 1);
-    if (source) {
+    if (source !== undefined) {
       var lineData = data.filter(
         (i) => parseInt(i.Line.slice(9)) === source[0].Java
       );

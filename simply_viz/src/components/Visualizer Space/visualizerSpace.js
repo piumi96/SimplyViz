@@ -8,7 +8,9 @@ import Table from "react-bootstrap/Table";
 var imports = [];
 var functions = [];
 var variables = [];
+var conditions = [];
 var dataTypes = ["int", "float", "boolean", "string"];
+var operators = ["and", "or", "not"];
 
 export class VisualizerSpace extends React.Component {
   constructor(props) {
@@ -17,8 +19,10 @@ export class VisualizerSpace extends React.Component {
       code: this.props.getCodeData.code,
       codeData: this.props.getCodeData.codeData,
       lineNumber: this.props.getCodeData.lineNumber,
+      prevLine: 0,
     };
 
+    conditions = [];
     imports = [];
     variables = [];
 
@@ -27,6 +31,8 @@ export class VisualizerSpace extends React.Component {
     this.getExternals = this.getExternals.bind(this);
     this.getFunctions = this.getFunctions.bind(this);
     this.getVariables = this.getVariables.bind(this);
+    this.getConditions = this.getConditions.bind(this);
+    this.getLoops = this.getLoops.bind(this);
 
     this.getFunctions();
   }
@@ -119,20 +125,47 @@ export class VisualizerSpace extends React.Component {
         line: line,
         data: data,
       });
-      
+
       console.log(variables);
-      return variables;
     }
+    return variables;
   }
 
-  getConditions() {}
+  getConditions() {
+    var line = this.state.lineNumber;
+    var code = this.state.code;
+    var subConditions = [];
+
+    if (line > 0) {
+      if (code[line].includes("if")) {
+        var cond = code[line].substring(
+          code[line].lastIndexOf("(") + 1,
+          code[line].lastIndexOf("){")
+        );
+        conditions.push(cond);
+
+        /* for (var op in operators) {
+          for (var sub in subConditions) {
+            if (subConditions[sub].includes(operators[op])) {
+              var str = subConditions[sub].split(operators[op]);
+              subConditions = [];
+              for(var s in str){
+                subConditions.push(str[s].trim());
+              }
+            }
+          }
+        } */
+      }
+    }
+    //conditions.push(subConditions);
+    return conditions;
+  }
 
   getLoops() {}
 
   render() {
     return (
       <div>
-
         <h3 class="h3 text-center pb-3">Visualization Panel</h3>
         <Row>
           <Col className="col-6">
@@ -186,26 +219,17 @@ export class VisualizerSpace extends React.Component {
                               <td colspan="1">In</td>
                               <td colspan="1">
                                 {func.in.map((obj) => (
-                                  <p>
-                                    {obj.type}
-                                    <br />
-                                  </p>
+                                  <p className="p-0 m-0">{obj.type}</p>
                                 ))}
                               </td>
                               <td colspan="1">
                                 {func.in.map((obj) => (
-                                  <p>
-                                    {obj.name}
-                                    <br />
-                                  </p>
+                                  <p className="p-0 m-0">{obj.name}</p>
                                 ))}
                               </td>
                               <td colspan="1">
                                 {func.in.map((obj) => (
-                                  <p>
-                                    {obj.value}
-                                    <br />
-                                  </p>
+                                  <p className="p-0 m-0">{obj.value}</p>
                                 ))}
                               </td>
                             </tr>
@@ -266,10 +290,12 @@ export class VisualizerSpace extends React.Component {
                               <td colspan="4">Condition</td>
                               <td colspan="2">Result</td>
                             </tr>
-                            <tr>
-                              <td colspan="4">true</td>
-                              <td colspan="2">true</td>
-                            </tr>
+                            {this.getConditions().map((line) => (
+                              <tr>
+                                <td colspan="4">{line}</td>
+                                <td colspan="2"></td>
+                              </tr>
+                            ))}
                           </tbody>
                         </Table>
                       </div>

@@ -110,14 +110,38 @@ export class VisualizerSpace extends React.Component {
 
   getVariables() {
     var line = this.state.lineNumber;
+    var code = this.state.code;
+    var type = [];
+    for (var l in code) {
+      for (var t in dataTypes) {
+        if (code[l].includes(dataTypes[t]) && l > 0) {
+          type.push({
+            line: l,
+            type: dataTypes[t],
+          });
+          break;
+        }
+      }
+    }
+
+    var typeRender = [];
+    for (var tp in type) {
+      if (type[tp].line <= line) {
+        typeRender.push(type[tp].type);
+      }
+    }
+
     if (line > 0) {
       var codeData = this.state.codeData[0].Value;
       var data = [];
       for (var key in codeData) {
+        var count = 0;
         data.push({
           name: key,
+          type: typeRender[count],
           value: codeData[key],
         });
+        count++;
       }
 
       variables.push({
@@ -135,7 +159,7 @@ export class VisualizerSpace extends React.Component {
     var codeOrder = this.state.codeOrder;
     var render = [];
     var val = "";
-    var notTraversed = (conditions.filter((i) => i.line===line)).length === 0;
+    var notTraversed = conditions.filter((i) => i.line === line).length === 0;
 
     if (line > 0 && notTraversed) {
       if (code[line].includes("if")) {
@@ -143,10 +167,10 @@ export class VisualizerSpace extends React.Component {
           code[line].lastIndexOf("(") + 1,
           code[line].lastIndexOf("){")
         );
-        
-        for(var l=0; l<codeOrder.length; l++){
-          if(codeOrder[l]===line){
-            val = codeOrder[l+1] === line+1 ? "true" : "false";
+
+        for (var l = 0; l < codeOrder.length; l++) {
+          if (codeOrder[l] === line) {
+            val = codeOrder[l + 1] === line + 1 ? "true" : "false";
             break;
           }
         }
@@ -157,7 +181,7 @@ export class VisualizerSpace extends React.Component {
           line: line,
         };
         conditions.push(data);
- 
+
         /* for (var op in operators) {
           for (var sub in subConditions) {
             if (subConditions[sub].includes(operators[op])) {
@@ -276,7 +300,7 @@ export class VisualizerSpace extends React.Component {
                             {this.getVariables().map((line) =>
                               line.data.map((data, i) => (
                                 <tr key={i}>
-                                  <td colspan="2"></td>
+                                  <td colspan="2">{data.type}</td>
                                   <td colspan="2">{data.name}</td>
                                   <td colspan="2">{data.value}</td>
                                 </tr>

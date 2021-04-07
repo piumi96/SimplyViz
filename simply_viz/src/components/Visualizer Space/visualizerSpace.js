@@ -199,7 +199,11 @@ export class VisualizerSpace extends React.Component {
     return render;
   }
 
-  getLoops() {}
+  getLoops() {
+    var line = this.state.lineNumber;
+    var code = this.state.code;
+    
+  }
 
   render() {
     return (

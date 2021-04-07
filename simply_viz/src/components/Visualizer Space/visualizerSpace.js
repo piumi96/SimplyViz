@@ -18,11 +18,10 @@ export class VisualizerSpace extends React.Component {
     this.state = {
       code: this.props.getCodeData.code,
       codeData: this.props.getCodeData.codeData,
+      codeOrder: this.props.getCodeData.codeOrder,
       lineNumber: this.props.getCodeData.lineNumber,
-      prevLine: 0,
     };
 
-    conditions = [];
     imports = [];
     variables = [];
 
@@ -126,7 +125,6 @@ export class VisualizerSpace extends React.Component {
         data: data,
       });
 
-      console.log(variables);
     }
     return variables;
   }
@@ -134,16 +132,32 @@ export class VisualizerSpace extends React.Component {
   getConditions() {
     var line = this.state.lineNumber;
     var code = this.state.code;
-    var subConditions = [];
+    var codeOrder = this.state.codeOrder;
+    var render = [];
+    var val = "";
+    var notTraversed = (conditions.filter((i) => i.line===line)).length === 0;
 
-    if (line > 0) {
+    if (line > 0 && notTraversed) {
       if (code[line].includes("if")) {
         var cond = code[line].substring(
           code[line].lastIndexOf("(") + 1,
           code[line].lastIndexOf("){")
         );
-        conditions.push(cond);
+        
+        for(var l=0; l<codeOrder.length; l++){
+          if(codeOrder[l]===line){
+            val = codeOrder[l+1] === line+1 ? "true" : "false";
+            break;
+          }
+        }
 
+        var data = {
+          condition: cond,
+          value: val,
+          line: line,
+        };
+        conditions.push(data);
+ 
         /* for (var op in operators) {
           for (var sub in subConditions) {
             if (subConditions[sub].includes(operators[op])) {
@@ -157,8 +171,8 @@ export class VisualizerSpace extends React.Component {
         } */
       }
     }
-    //conditions.push(subConditions);
-    return conditions;
+    render = conditions.filter((i) => i.line <= line);
+    return render;
   }
 
   getLoops() {}
@@ -292,8 +306,8 @@ export class VisualizerSpace extends React.Component {
                             </tr>
                             {this.getConditions().map((line) => (
                               <tr>
-                                <td colspan="4">{line}</td>
-                                <td colspan="2"></td>
+                                <td colspan="4">{line.condition}</td>
+                                <td colspan="2">{line.value}</td>
                               </tr>
                             ))}
                           </tbody>

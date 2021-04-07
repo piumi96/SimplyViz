@@ -18,13 +18,14 @@ export class Layout extends React.Component {
       code: [],
       codeData: [],
       lineNumber: -1,
+      codeOrder: []
     };
 
     this.handleCodeData = this.handleCodeData.bind(this);
   }
 
-  handleCodeData(data, line, code) {
-    this.setState({code: code, codeData: data, lineNumber: line});
+  handleCodeData(data, line, code, order) {
+    this.setState({code: code, codeData: data, lineNumber: line, codeOrder: order});
   }
 
   render() {

@@ -11,6 +11,8 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Container";
 import Navbar from "react-bootstrap/Navbar";
 
+var key = -1;
+
 export class Layout extends React.Component {
   constructor(props){
     super(props);
@@ -18,14 +20,16 @@ export class Layout extends React.Component {
       code: [],
       codeData: [],
       lineNumber: -1,
-      codeOrder: []
+      codeOrder: [],
+      key: -1
     };
 
     this.handleCodeData = this.handleCodeData.bind(this);
   }
 
   handleCodeData(data, line, code, order) {
-    this.setState({code: code, codeData: data, lineNumber: line, codeOrder: order});
+    key++;
+    this.setState({code: code, codeData: data, lineNumber: line, codeOrder: order, key: key});
   }
 
   render() {
@@ -56,10 +60,7 @@ export class Layout extends React.Component {
               <CodeSpace getCodeData={this.handleCodeData} />
             </Col>
             <Col className="col-8 m-2 p-3 outer">
-              <VisualizerSpace
-                getCodeData={this.state}
-                key={this.state.lineNumber}
-              />
+              <VisualizerSpace getCodeData={this.state} key={this.state.key} />
             </Col>
           </Row>
         </Container>

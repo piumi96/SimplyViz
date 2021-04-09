@@ -11,8 +11,9 @@ var data = require("./assets/code.json");
 var sourceMap = require("./assets/sourceMap.json");
 var currentLine = 0;
 var codeOrder;
-var next, back = 0;
-var lineIndex = 0;
+var next,
+  back = 0;
+var repeat = 0;
 
 export class CodeSpace extends React.Component {
   constructor(props) {
@@ -27,7 +28,7 @@ export class CodeSpace extends React.Component {
         "if(a<b){",
         "sum = a + b;",
         "}",
-        "repeat(int i=0; i<a; i++){",
+        "repeat(int i; range: 0 to a; next:1){",
         "sum = sum + 1;",
         "}",
         "print(sum);",
@@ -36,6 +37,8 @@ export class CodeSpace extends React.Component {
       currentLine: -1,
       lineData: [],
     };
+
+    repeat = 0;
 
     this.onClickNext = this.onClickNext.bind(this);
     this.onClickBack = this.onClickBack.bind(this);
@@ -57,50 +60,71 @@ export class CodeSpace extends React.Component {
   }
 
   onClickNext() {
-    if (next < codeOrder.length-1) {
+    if (next < codeOrder.length - 1) {
       next++;
       back = next;
       currentLine = codeOrder[next];
 
-     /*  console.log("current line: " + currentLine);
-      console.log("back: " + back);
-      console.log("next: " + next); */
-  
+      if (codeOrder[next] !== codeOrder[next - 1]) {
+        repeat = 0;
+      } else {
+        repeat++;
+      }
+
+      console.log("current line: " + currentLine);
     }
-    this.onVisualizeData(currentLine);
+    //console.log(repeat);
+    this.onVisualizeData(currentLine, repeat);
     this.setState({ currentLine: currentLine });
   }
 
   onClickBack() {
-    if(back>=1){
+    if (back >= 1) {
       back--;
       next = back;
       currentLine = codeOrder[back];
-      
-     /*  console.log("current line: " + currentLine);
-      console.log("back: " + back);
-      console.log("next: " + next); */
+
+      if (codeOrder[back] !== codeOrder[back - 1]) {
+        repeat = 0;
+      } else {
+        var count = 0;
+        for(var i = back-1; i>0; i--){
+          if(codeOrder[back]===codeOrder[i]){
+            count++;
+          }
+          else{
+            break;
+          }
+        }
+        repeat = count;
+      }
+
+      //console.log("current line: " + currentLine);
     }
     this.setState({ currentLine: currentLine });
-    this.onVisualizeData(currentLine);
+    this.onVisualizeData(currentLine, repeat);
   }
 
   getClassName(i) {
-    if(i === currentLine && (currentLine === 0 || currentLine === codeOrder[next])){
-      //console.log(currentLine);
+    if (
+      i === currentLine &&
+      (currentLine === 0 || currentLine === codeOrder[next])
+    ) {
       return "highlight";
-    }
-    else{
+    } else {
       return "not-highlight";
     }
   }
 
-  onVisualizeData(sourceLine) {
+  onVisualizeData(sourceLine, repeat) {
     var source = sourceMap.filter((i) => i.Simply === sourceLine + 1);
     if (source !== undefined) {
-      var lineData = data.filter(
+      var lineData = [];
+      var newData = data.filter(
         (i) => parseInt(i.Line.slice(9)) === source[0].Java
       );
+      lineData.push(newData[repeat])
+      console.log(lineData);
 
       this.handleVisualize(
         lineData,

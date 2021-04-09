@@ -141,6 +141,7 @@ export class VisualizerSpace extends React.Component {
           type: typeRender[count],
           value: codeData[key],
         });
+        //console.log(data);
         count++;
       }
 
@@ -150,6 +151,7 @@ export class VisualizerSpace extends React.Component {
       });
 
     }
+    //console.log(variables);
     return variables;
   }
 

@@ -238,23 +238,22 @@ export class VisualizerSpace extends React.Component {
         end: end,
         next: next,
       };
+    }
+    if (variables.length !== 0) {
+      var id = variables[0].data.filter((i) => i.name === nextId);
+      if (id.length !== 0) {
+        next = id[0].value + nextVal;
+        data.next = next;
+      }
+    }
 
-      
-    }
-    var id = variables[0].data.filter((i) => i.name === nextId);
-    if(id.length !== 0){
-      next = id[0].value + nextVal;
-      data.next = next;
-    }
     loops.push(data);
-    
-    if(loops[0] !== undefined){
+
+    if (loops[0] !== undefined) {
       return loops;
-    }
-    else{
+    } else {
       return [];
     }
-    
   }
 
   render() {

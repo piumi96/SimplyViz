@@ -37,3 +37,12 @@ th, td {
     text-align:left;
 }
 
+.highlight {
+    border-color: #FEE494 !important;
+    border-width: 1rem;
+}
+
+.not-highlight {
+    outline-color: white;
+}
+

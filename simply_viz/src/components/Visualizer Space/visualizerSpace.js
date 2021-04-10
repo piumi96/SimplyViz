@@ -9,6 +9,7 @@ var imports = [];
 var functions = [];
 var variables = [];
 var conditions = [];
+var loops = [];
 var dataTypes = ["int", "float", "boolean", "string"];
 var operators = ["and", "or", "not"];
 
@@ -24,6 +25,7 @@ export class VisualizerSpace extends React.Component {
 
     imports = [];
     variables = [];
+    loops = [];
 
     this.getKeyIn = this.getKeyIn.bind(this);
     this.getPrint = this.getPrint.bind(this);
@@ -149,7 +151,6 @@ export class VisualizerSpace extends React.Component {
         line: line,
         data: data,
       });
-
     }
     //console.log(variables);
     return variables;
@@ -204,6 +205,55 @@ export class VisualizerSpace extends React.Component {
   getLoops() {
     var line = this.state.lineNumber;
     var code = this.state.code;
+    var range, start, endId, end, nextId, nextVal, data;
+    var next = "";
+
+    if (code[line].includes("repeat")) {
+      range = code[line]
+        .slice(
+          code[line].lastIndexOf("range:") + 6,
+          code[line].lastIndexOf("next") - 2
+        )
+        .trim();
+      start = parseInt(range.slice(0, range.lastIndexOf("to")).trim());
+      endId = range.slice(range.lastIndexOf("to") + 3).trim();
+      end = variables[0].data.filter((i) => i.name === endId)[0].value;
+      nextId = code[line]
+        .slice(
+          code[line].lastIndexOf("int") + 4,
+          code[line].lastIndexOf("; range:")
+        )
+        .trim();
+      nextVal = parseInt(
+        code[line].slice(
+          code[line].lastIndexOf("next:") + 5,
+          code[line].lastIndexOf("){")
+        )
+      );
+
+      data = {
+        line: line,
+        range: range,
+        start: start,
+        end: end,
+        next: next,
+      };
+
+      
+    }
+    var id = variables[0].data.filter((i) => i.name === nextId);
+    if(id.length !== 0){
+      next = id[0].value + nextVal;
+      data.next = next;
+    }
+    loops.push(data);
+    
+    if(loops[0] !== undefined){
+      return loops;
+    }
+    else{
+      return [];
+    }
     
   }
 
@@ -356,15 +406,19 @@ export class VisualizerSpace extends React.Component {
                           </thead>
                           <tbody>
                             <tr>
-                              <td colspan="2">Condition</td>
-                              <td colspan="2">Result</td>
-                              <td colspan="2">Next Value</td>
+                              <td colspan="3">Range</td>
+                              <td colspan="1">Start Value</td>
+                              <td colspan="1">End Value</td>
+                              <td colspan="1">Next</td>
                             </tr>
-                            <tr>
-                              <td colspan="2">0 GT 5</td>
-                              <td colspan="2">true</td>
-                              <td colspan="2">0 + 1</td>
-                            </tr>
+                            {this.getLoops().map((data) => (
+                              <tr>
+                                <td colspan="3">{data.range}</td>
+                                <td colspan="1">{data.start}</td>
+                                <td colspan="1">{data.end}</td>
+                                <td colspan="1">{data.next}</td>
+                              </tr>
+                            ))}
                           </tbody>
                         </Table>
                       </div>

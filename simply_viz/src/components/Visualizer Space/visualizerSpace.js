@@ -9,9 +9,9 @@ var imports = [];
 var functions = [];
 var variables = [];
 var conditions = [];
+var classList;
 var loops = [];
 var dataTypes = ["int", "float", "boolean", "string"];
-var operators = ["and", "or", "not"];
 
 export class VisualizerSpace extends React.Component {
   constructor(props) {
@@ -26,6 +26,7 @@ export class VisualizerSpace extends React.Component {
     imports = [];
     variables = [];
     loops = [];
+    classList = {};
 
     this.getKeyIn = this.getKeyIn.bind(this);
     this.getPrint = this.getPrint.bind(this);
@@ -34,6 +35,7 @@ export class VisualizerSpace extends React.Component {
     this.getVariables = this.getVariables.bind(this);
     this.getConditions = this.getConditions.bind(this);
     this.getLoops = this.getLoops.bind(this);
+    this.getClassName = this.getClassName.bind(this);
 
     this.getFunctions();
   }
@@ -99,6 +101,7 @@ export class VisualizerSpace extends React.Component {
           code[i].lastIndexOf(" {")
         );
         var data = {
+          line: 1,
           name: name,
           in: inputData,
           out: fout,
@@ -143,7 +146,6 @@ export class VisualizerSpace extends React.Component {
           type: typeRender[count],
           value: codeData[key],
         });
-        //console.log(data);
         count++;
       }
 
@@ -152,7 +154,6 @@ export class VisualizerSpace extends React.Component {
         data: data,
       });
     }
-    //console.log(variables);
     return variables;
   }
 
@@ -256,7 +257,45 @@ export class VisualizerSpace extends React.Component {
     }
   }
 
+  getClassName() {
+    var funcClass,
+      varClass,
+      ifClass,
+      loopClass = "table-not-highlight";
+    var code = this.state.code;
+    var line = this.state.lineNumber;
+    var codeData = this.state.codeData;
+    if (code[line] !== undefined) {
+      funcClass = code[line].includes("function") 
+      ? "table-highlight" 
+      : "table-not-highlight";
+      ifClass = code[line].includes("if")
+        ? "table-highlight"
+        : "table-not-highlight";
+      loopClass = code[line].includes("repeat")
+        ? "table-highlight"
+        : "table-not-highlight";
+      if (line > 0) {
+        varClass =
+          codeData[0].Value.length !== 0
+            ? "table-highlight"
+            : "table-not-highlight";
+      }
+
+      classList = {
+        function: funcClass,
+        variable: varClass,
+        condition: ifClass,
+        loop: loopClass,
+      };
+      console.log(classList);
+    }
+  }
+
   render() {
+    {
+      this.getClassName();
+    }
     return (
       <div>
         <h3 class="h3 text-center pb-3">Visualization Panel</h3>
@@ -287,9 +326,9 @@ export class VisualizerSpace extends React.Component {
             <Row key={i}>
               <Col className="col-12">
                 <div className="p text-center p-3 p-box">
-                  <Row>
+                  <Row className="mb-2">
                     <Col className="col-6">
-                      <div className="table-responsive table-outer">
+                      <div className={classList.function + " table-responsive table-outer"}>
                         <Table className="table-bordered text-light table-func">
                           <thead>
                             <tr>
@@ -337,7 +376,7 @@ export class VisualizerSpace extends React.Component {
                       </div>
                     </Col>
                     <Col className="col-6">
-                      <div className="table-responsive table-outer">
+                      <div className={classList.variable + " table-responsive table-outer"}>
                         <Table className="table-bordered text-light table-var">
                           <thead>
                             <tr>
@@ -369,7 +408,7 @@ export class VisualizerSpace extends React.Component {
 
                   <Row>
                     <Col className="col-6">
-                      <div className="table-responsive table-outer">
+                      <div className={classList.condition + " table-responsive table-outer"}>
                         <Table className="table-bordered text-light table-if">
                           <thead>
                             <tr>
@@ -394,12 +433,12 @@ export class VisualizerSpace extends React.Component {
                       </div>
                     </Col>
                     <Col className="col-6">
-                      <div className="table-responsive table-outer">
+                      <div className={classList.loop + " table-responsive table-outer"}>
                         <Table className="table-bordered text-light table-loop">
                           <thead>
                             <tr>
                               <th scope="col" colspan="6">
-                                Loops :
+                                Loops :  
                               </th>
                             </tr>
                           </thead>

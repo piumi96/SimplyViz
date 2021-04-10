@@ -21,7 +21,7 @@ export class CodeSpace extends React.Component {
 
     this.state = {
       code: [
-        "function main(in: int a, int b) out: no {",
+        "function main(in: ) out: no {",
         "int a = 3;",
         "int b = 4;",
         "int sum = 0;",

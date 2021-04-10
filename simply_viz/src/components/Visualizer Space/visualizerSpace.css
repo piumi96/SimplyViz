@@ -15,6 +15,7 @@ th, td {
 
 .table-outer {
     border-radius: 5px !important;
+    padding: 0.25rem;
 }
 
 .table-func {
@@ -37,12 +38,11 @@ th, td {
     text-align:left;
 }
 
-.highlight {
-    border-color: #FEE494 !important;
-    border-width: 1rem;
+.table-highlight {
+    background-color: #FEE494 !important;
 }
 
-.not-highlight {
-    outline-color: white;
+.table-not-highlight {
+    background-color: white;
 }
 

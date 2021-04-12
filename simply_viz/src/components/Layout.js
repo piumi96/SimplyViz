@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import MetaTags from "react-meta-tags";
+//import Xarrow from "react-xarrows";
 
 import "./layout.css";
 import {CodeSpace} from "./Code Space/codeSpace"
@@ -56,10 +57,10 @@ export class Layout extends React.Component {
 
         <Container className="container container-fluid">
           <Row className="row p-2">
-            <Col className="col-3 m-2 p-3 outer">
+            <Col className="col-3 m-2 p-3 outer" id="codeSpace">
               <CodeSpace getCodeData={this.handleCodeData} />
             </Col>
-            <Col className="col-8 m-2 p-3 outer">
+            <Col className="col-8 m-2 p-3 outer" id="visualizer">
               <VisualizerSpace getCodeData={this.state} key={this.state.key} />
             </Col>
           </Row>

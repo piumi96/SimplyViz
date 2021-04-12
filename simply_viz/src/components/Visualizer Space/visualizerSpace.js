@@ -305,9 +305,7 @@ export class VisualizerSpace extends React.Component {
   }
 
   render() {
-    {
-      this.getClassName();
-    }
+    this.getClassName();
     return (
       <div>
         <h3 class="h3 text-center pb-3">Visualization Panel</h3>

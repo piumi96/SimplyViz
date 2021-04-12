@@ -47,10 +47,22 @@ export class VisualizerSpace extends React.Component {
   getPrint() {
     var line = this.state.lineNumber;
     var data = "";
-    if (line >= 0) {
-      var code = this.state.code[line];
+    if (line > 0) {
+      var codeData = this.state.codeData[0].Value;
+      var code = this.state.code[line+1];
       if (code.includes("print")) {
-        data = this.state.codeData[0].Value.sum;
+        var dataId = code.slice(code.lastIndexOf("print(")+6, code.lastIndexOf(");"));
+        for(var key in codeData){
+          if(key === dataId){
+            data = codeData[key];
+            break;
+          }
+        }
+        //console.log(data);
+       /*  data = variables[0].data.filter((i) => i.name === dataId)[0].value;
+        if(data === undefined){
+          data = dataId;
+        } */
       }
     }
     return data;
@@ -261,6 +273,7 @@ export class VisualizerSpace extends React.Component {
     var funcClass,
       varClass,
       ifClass,
+      printClass,
       loopClass = "table-not-highlight";
     var code = this.state.code;
     var line = this.state.lineNumber;
@@ -275,6 +288,9 @@ export class VisualizerSpace extends React.Component {
       loopClass = code[line].includes("repeat")
         ? "table-highlight"
         : "table-not-highlight";
+      printClass = code[line+1].includes("print")
+        ? "table-highlight"
+        : "table-not-highlight"
       if (line > 0) {
         varClass =
           codeData[0].Value.length !== 0
@@ -287,6 +303,7 @@ export class VisualizerSpace extends React.Component {
         variable: varClass,
         condition: ifClass,
         loop: loopClass,
+        print: printClass,
       };
       console.log(classList);
     }
@@ -306,7 +323,9 @@ export class VisualizerSpace extends React.Component {
             </p>
           </Col>
           <Col className="col-6">
-            <p className="p text-center p-box">Print: {this.getPrint()}</p>
+            <p className={classList.print + " p text-center p-box"}>
+              Print: {this.getPrint()}
+            </p>
           </Col>
         </Row>
         <Row>
@@ -328,7 +347,11 @@ export class VisualizerSpace extends React.Component {
                 <div className="p text-center p-3 p-box">
                   <Row className="mb-2">
                     <Col className="col-6">
-                      <div className={classList.function + " table-responsive table-outer"}>
+                      <div
+                        className={
+                          classList.function + " table-responsive table-outer"
+                        }
+                      >
                         <Table className="table-bordered text-light table-func">
                           <thead>
                             <tr>
@@ -376,7 +399,11 @@ export class VisualizerSpace extends React.Component {
                       </div>
                     </Col>
                     <Col className="col-6">
-                      <div className={classList.variable + " table-responsive table-outer"}>
+                      <div
+                        className={
+                          classList.variable + " table-responsive table-outer"
+                        }
+                      >
                         <Table className="table-bordered text-light table-var">
                           <thead>
                             <tr>
@@ -408,7 +435,11 @@ export class VisualizerSpace extends React.Component {
 
                   <Row>
                     <Col className="col-6">
-                      <div className={classList.condition + " table-responsive table-outer"}>
+                      <div
+                        className={
+                          classList.condition + " table-responsive table-outer"
+                        }
+                      >
                         <Table className="table-bordered text-light table-if">
                           <thead>
                             <tr>
@@ -433,12 +464,16 @@ export class VisualizerSpace extends React.Component {
                       </div>
                     </Col>
                     <Col className="col-6">
-                      <div className={classList.loop + " table-responsive table-outer"}>
+                      <div
+                        className={
+                          classList.loop + " table-responsive table-outer"
+                        }
+                      >
                         <Table className="table-bordered text-light table-loop">
                           <thead>
                             <tr>
                               <th scope="col" colspan="6">
-                                Loops :  
+                                Loops :
                               </th>
                             </tr>
                           </thead>

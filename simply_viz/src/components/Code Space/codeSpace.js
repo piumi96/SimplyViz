@@ -14,6 +14,7 @@ var codeOrder;
 var next,
   back = 0;
 var repeat = 0;
+var stop = true;
 
 export class CodeSpace extends React.Component {
   constructor(props) {
@@ -42,6 +43,8 @@ export class CodeSpace extends React.Component {
 
     this.onClickNext = this.onClickNext.bind(this);
     this.onClickBack = this.onClickBack.bind(this);
+    this.onClickStop = this.onClickStop.bind(this);
+    this.onClickStart = this.onClickStart.bind(this);
 
     this.mapCodeOrder();
   }
@@ -73,7 +76,6 @@ export class CodeSpace extends React.Component {
 
       console.log("current line: " + currentLine);
     }
-    //console.log(repeat);
     this.onVisualizeData(currentLine, repeat);
     this.setState({ currentLine: currentLine });
   }
@@ -88,11 +90,10 @@ export class CodeSpace extends React.Component {
         repeat = 0;
       } else {
         var count = 0;
-        for(var i = back-1; i>0; i--){
-          if(codeOrder[back]===codeOrder[i]){
+        for (var i = back - 1; i > 0; i--) {
+          if (codeOrder[back] === codeOrder[i]) {
             count++;
-          }
-          else{
+          } else {
             break;
           }
         }
@@ -103,6 +104,20 @@ export class CodeSpace extends React.Component {
     }
     this.setState({ currentLine: currentLine });
     this.onVisualizeData(currentLine, repeat);
+  }
+
+  onClickStop(){
+    stop = true;
+  }
+
+  onClickStart(){
+    stop = false;
+    this.onClickNext();
+    setInterval(() => {
+      if (!stop && next < codeOrder.length - 1) {
+        this.onClickNext();
+      }
+    }, 1000);
   }
 
   getClassName(i) {
@@ -123,7 +138,7 @@ export class CodeSpace extends React.Component {
       var newData = data.filter(
         (i) => parseInt(i.Line.slice(9)) === source[0].Java
       );
-      lineData.push(newData[repeat])
+      lineData.push(newData[repeat]);
       console.log(lineData);
 
       this.handleVisualize(
@@ -162,10 +177,20 @@ export class CodeSpace extends React.Component {
             </Button>
           </Col>
           <Col className="col-3 pl-1 pr-1">
-            <Button className="btn btn-md btn-primary mb-3">Stop</Button>
+            <Button
+              className="btn btn-md btn-primary mb-3"
+              onClick={this.onClickStop}
+            >
+              Stop
+            </Button>
           </Col>
           <Col className="col-3 pl-1 pr-1">
-            <Button className="btn btn-md btn-primary mb-3">Start</Button>
+            <Button
+              className="btn btn-md btn-primary mb-3"
+              onClick={this.onClickStart}
+            >
+              Start
+            </Button>
           </Col>
           <Col className="col-3 pl-1 pr-1">
             <Button
@@ -177,6 +202,19 @@ export class CodeSpace extends React.Component {
           </Col>
         </Row>
 
+        {/* <Row>
+          <Col className="col-2"></Col>
+          <Col className="col-8 pl-1 pr-1">
+            <Button
+              className="btn btn-md btn-primary mb-3 w-100"
+              onClick={this.onClickRestart}
+            >
+              RESTART
+            </Button>
+          </Col>
+          <Col className="col-2"></Col>
+        </Row>
+ */}
         <Row>
           <Col className="col-2">
             <img className="img-alien" src={alien} alt="alien"></img>

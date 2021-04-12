@@ -58,11 +58,6 @@ export class VisualizerSpace extends React.Component {
             break;
           }
         }
-        //console.log(data);
-       /*  data = variables[0].data.filter((i) => i.name === dataId)[0].value;
-        if(data === undefined){
-          data = dataId;
-        } */
       }
     }
     return data;
@@ -74,7 +69,7 @@ export class VisualizerSpace extends React.Component {
     if (line >= 0) {
       var code = this.state.code[line];
       if (code.includes("import")) {
-        data = code.slice(7);
+        data = code.slice(7, code.lastIndexOf(";"));
       }
     }
     imports.push(data);

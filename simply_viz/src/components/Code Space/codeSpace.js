@@ -10,7 +10,7 @@ import Button from "react-bootstrap/Button";
 var data = require("./assets/code.json");
 var sourceMap = require("./assets/sourceMap.json");
 var currentLine = 0;
-var codeOrder;
+var codeOrder, interval;
 var next,
   back = 0;
 var repeat = 0;
@@ -108,16 +108,22 @@ export class CodeSpace extends React.Component {
 
   onClickStop(){
     stop = true;
+    clearInterval(interval);
   }
 
   onClickStart(){
     stop = false;
     this.onClickNext();
-    setInterval(() => {
-      if (!stop && next < codeOrder.length - 1) {
-        this.onClickNext();
-      }
-    }, 1000);
+    if(!stop){
+      interval = setInterval(() => {
+         if(next < codeOrder.length - 1){
+           this.onClickNext();
+         }
+         else{
+           this.onClickStop();
+         }
+      }, 1000);
+    }
   }
 
   getClassName(i) {

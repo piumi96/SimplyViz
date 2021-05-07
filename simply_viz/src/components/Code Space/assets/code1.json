@@ -12,15 +12,29 @@
     "Function": "main",
     "Value": { "a": 3, "b": 4, "sum": 0 }
   },
-  { "Line": "Debuggee:16", "Function": "add", "Value": { "a": 3, "b": 4 } },
   {
     "Line": "Debuggee:9",
     "Function": "main",
     "Value": { "a": 3, "b": 4, "sum": 7 }
   },
   {
+    "Line": "Debuggee:10",
+    "Function": "main",
+    "Value": { "a": 3, "b": 4, "i": 0, "sum": 7 }
+  },
+  {
+    "Line": "Debuggee:10",
+    "Function": "main",
+    "Value": { "a": 3, "b": 4, "i": 1, "sum": 8 }
+  },
+  {
+    "Line": "Debuggee:10",
+    "Function": "main",
+    "Value": { "a": 3, "b": 4, "i": 2, "sum": 9 }
+  },
+  {
     "Line": "Debuggee:12",
     "Function": "main",
-    "Value": { "a": 3, "b": 4, "sum": 7 }
+    "Value": { "a": 3, "b": 4, "sum": 10 }
   }
 ]

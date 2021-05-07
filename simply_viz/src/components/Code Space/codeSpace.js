@@ -7,8 +7,8 @@ import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 
-var data = require("./assets/code.json");
-var sourceMap = require("./assets/sourceMap.json");
+var data = require("./assets/code1.json");
+var sourceMap = require("./assets/sourceMap1.json");
 var currentLine = 0;
 var codeOrder, interval;
 var next,
@@ -22,14 +22,30 @@ export class CodeSpace extends React.Component {
 
     this.state = {
       code: [
+        /* "function main(in: ) out: no {",
+        "integer a = 3;",
+        "integer b = 4;",
+        "integer sum = 0;",
+        "if(a<b){",
+        "sum = add(a,b);",
+        "}",
+        "if(a>b){",
+        "sum = 0;",
+        "}",
+        "display(sum);",
+        "}",
+        "",
+        "function add(in: integer a, integer b) out: integer {",
+        "return a + b;",
+        "}", */
         "function main(in: ) out: no {",
-        "int a = 3;",
-        "int b = 4;",
-        "int sum = 0;",
+        "integer a = 3;",
+        "integer b = 4;",
+        "integer sum = 0;",
         "if(a<b){",
         "sum = a + b;",
         "}",
-        "repeat(int i; range: 0 to a; next:1){",
+        "repeat(integer i; range: 0 to a; next:1){",
         "sum = sum + 1;",
         "}",
         "print(sum);",
@@ -59,7 +75,7 @@ export class CodeSpace extends React.Component {
     });
     next = codeOrder.indexOf(currentLine);
     back = next;
-    console.log(codeOrder);
+    //console.log(codeOrder);
   }
 
   onClickNext() {
@@ -74,7 +90,7 @@ export class CodeSpace extends React.Component {
         repeat++;
       }
 
-      console.log("current line: " + currentLine);
+      //console.log("current line: " + currentLine);
     }
     this.onVisualizeData(currentLine, repeat);
     this.setState({ currentLine: currentLine });
@@ -145,7 +161,7 @@ export class CodeSpace extends React.Component {
         (i) => parseInt(i.Line.slice(9)) === source[0].Java
       );
       lineData.push(newData[repeat]);
-      console.log(lineData);
+      //console.log(lineData);
 
       this.handleVisualize(
         lineData,

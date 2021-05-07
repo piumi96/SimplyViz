@@ -9,11 +9,13 @@ var imports = [];
 var functions = [];
 var variables = [];
 var conditions = [];
+var render,
+  traversed = [];
 var classList;
 var loops = [];
 var dataTypes = ["integer", "float", "boolean", "string", "character"];
 
-export class VisualizerSpace extends React.Component {
+export class Visualizer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -40,6 +42,22 @@ export class VisualizerSpace extends React.Component {
     this.getFunctions();
   }
 
+  intializeData() {
+    variables = [];
+    conditions = [];
+    var line = this.state.lineNumber;
+    var codeOrder = this.state.codeOrder;
+
+    for (var f in functions) {
+      variables.push({
+        function: functions[f].name,
+        functionData: [],
+      });
+    }
+
+    traversed = codeOrder.slice(0, codeOrder.lastIndexOf(line + 1));
+  }
+
   getKeyIn() {
     return "none";
   }
@@ -49,11 +67,14 @@ export class VisualizerSpace extends React.Component {
     var data = "";
     if (line > 0) {
       var codeData = this.state.codeData[0].Value;
-      var code = this.state.code[line+1];
-      if (code.includes("print")) {
-        var dataId = code.slice(code.lastIndexOf("print(")+6, code.lastIndexOf(");"));
-        for(var key in codeData){
-          if(key === dataId){
+      var code = this.state.code[line + 1];
+      if (code.includes("display")) {
+        var dataId = code.slice(
+          code.lastIndexOf("display(") + 8,
+          code.lastIndexOf(");")
+        );
+        for (var key in codeData) {
+          if (key === dataId) {
             data = codeData[key];
             break;
           }
@@ -79,6 +100,7 @@ export class VisualizerSpace extends React.Component {
   getFunctions() {
     functions = [];
     var code = this.state.code;
+
     for (var i = 0; i < code.length; i++) {
       var inputData = [];
       if (code[i].includes("function")) {
@@ -108,18 +130,77 @@ export class VisualizerSpace extends React.Component {
           code[i].lastIndexOf(" {")
         );
         var data = {
-          line: i+1,
+          line: i + 1,
           name: name,
           in: inputData,
           out: fout,
           value: null,
         };
-        //console.log(data);
         functions.push(data);
       }
     }
-
+    //console.log(functions);
+    this.intializeData();
     return functions;
+  }
+
+  getConditions() {
+    conditions = [];
+    var code = this.state.code;
+    var codeOrder = this.state.codeOrder;
+    var val = "";
+
+    for (var i = 1; i < code.length; i++) {
+      if (code[i].includes("if")) {
+        var cond = code[i].substring(
+          code[i].lastIndexOf("(") + 1,
+          code[i].lastIndexOf("){")
+        );
+
+        for (var l = 0; l < codeOrder.length; l++) {
+          if (codeOrder[l] === i) {
+            val = codeOrder[l + 1] === i + 1 ? "true" : "false";
+            break;
+          } else {
+            val = false;
+          }
+        }
+
+        var data = {
+          condition: cond,
+          value: val,
+          line: i,
+        };
+
+        for (var j = 0; j < functions.length; j++) {
+          if (j < functions.length - 1) {
+            if (i > functions[j].line && i < functions[j + 1].line) {
+              conditions.push({
+                functionLine: functions[j].line,
+                functionName: functions[j].name,
+                data: data,
+              });
+            }
+          } else if (j === functions.length - 1 && i > functions[j].line) {
+            conditions.push({
+              functionLine: functions[j].line,
+              functionName: functions[j].name,
+              data: data,
+            });
+          }
+        }
+        //console.log(conditions);
+      }
+    }
+
+    var render = [];
+    for (var c in conditions) {
+      if (traversed.lastIndexOf(conditions[c].data.line) !== -1) {
+        render.push(conditions[c]);
+      }
+    }
+    //console.log(render);
+    return render;
   }
 
   getVariables() {
@@ -147,6 +228,7 @@ export class VisualizerSpace extends React.Component {
 
     if (line > 0) {
       var codeData = this.state.codeData[0].Value;
+      var func = this.state.codeData[0].Function;
       var data = [];
       for (var key in codeData) {
         var count = 0;
@@ -158,113 +240,110 @@ export class VisualizerSpace extends React.Component {
         count++;
       }
 
-      variables.push({
-        line: line,
-        data: data,
-      });
+      for (var i in variables) {
+        variables[i].functionData = [];
+        if (variables[i].function === func) {
+          variables[i].functionData.push({
+            line: line,
+            data: data,
+          });
+        }
+      }
     }
+    //console.log(variables);
     return variables;
   }
 
-  getConditions() {
-    var line = this.state.lineNumber;
-    var code = this.state.code;
-    var codeOrder = this.state.codeOrder;
-    var render = [];
-    var val = "";
-    var notTraversed = conditions.filter((i) => i.line === line).length === 0;
-
-    if (line > 0 && notTraversed) {
-      if (code[line].includes("if")) {
-        var cond = code[line].substring(
-          code[line].lastIndexOf("(") + 1,
-          code[line].lastIndexOf("){")
-        );
-
-        for (var l = 0; l < codeOrder.length; l++) {
-          if (codeOrder[l] === line) {
-            val = codeOrder[l + 1] === line + 1 ? "true" : "false";
-            break;
-          }
-        }
-
-        var data = {
-          condition: cond,
-          value: val,
-          line: line,
-        };
-        conditions.push(data);
-
-        /* for (var op in operators) {
-          for (var sub in subConditions) {
-            if (subConditions[sub].includes(operators[op])) {
-              var str = subConditions[sub].split(operators[op]);
-              subConditions = [];
-              for(var s in str){
-                subConditions.push(str[s].trim());
-              }
-            }
-          }
-        } */
-      }
-    }
-    render = conditions.filter((i) => i.line <= line);
-    return render;
-  }
-
   getLoops() {
-    var line = this.state.lineNumber;
+    loops = [];
     var code = this.state.code;
     var range, start, endId, end, nextId, nextVal, data;
     var next = "";
 
-    if (code[line].includes("repeat")) {
-      range = code[line]
-        .slice(
-          code[line].lastIndexOf("range:") + 6,
-          code[line].lastIndexOf("next") - 2
-        )
-        .trim();
-      start = parseInt(range.slice(0, range.lastIndexOf("to")).trim());
-      endId = range.slice(range.lastIndexOf("to") + 3).trim();
-      end = variables[0].data.filter((i) => i.name === endId)[0].value;
-      nextId = code[line]
-        .slice(
-          code[line].lastIndexOf("integer") + 7,
-          code[line].lastIndexOf("; range:")
-        )
-        .trim();
-      nextVal = parseInt(
-        code[line].slice(
-          code[line].lastIndexOf("next:") + 5,
-          code[line].lastIndexOf("){")
-        )
-      );
+    for (var i = 1; i < code.length; i++) {
+      if (code[i].includes("repeat")) {
+        range = code[i]
+          .slice(
+            code[i].lastIndexOf("range:") + 6,
+            code[i].lastIndexOf("next") - 2
+          )
+          .trim();
+        start = parseInt(range.slice(0, range.lastIndexOf("to")).trim());
+        endId = range.slice(range.lastIndexOf("to") + 3).trim();
+        end = "";
+        nextId = code[i]
+          .slice(
+            code[i].lastIndexOf("integer") + 8,
+            code[i].lastIndexOf("; range:")
+          )
+          .trim();
+        nextVal = parseInt(
+          code[i].slice(
+            code[i].lastIndexOf("next:") + 5,
+            code[i].lastIndexOf("){")
+          )
+        );
 
-      data = {
-        line: line,
-        range: range,
-        start: start,
-        end: end,
-        next: next,
-      };
-    }
-    if (variables.length !== 0) {
-      var id = variables[0].data.filter((i) => i.name === nextId);
-      if (id.length !== 0) {
-        next = id[0].value + nextVal;
-        data.next = next;
+        data = {
+          line: i,
+          range: range,
+          start: start,
+          end: end,
+          next: next,
+        };
+
+        var id;
+        for (var j = 0; j < functions.length; j++) {
+          if (j < functions.length - 1) {
+            if (i > functions[j].line && i < functions[j + 1].line) {
+              id = variables[j].functionData[0].data.filter(
+                (d) => d.name === nextId
+              );
+              if (id.length !== 0) {
+                next = id[0].value + nextVal;
+                data.next = next;
+              }
+
+              data.end = variables[j].functionData[0].data.filter(
+                (v) => v.name === endId
+              )[0].value;
+
+              loops.push({
+                functionLine: functions[j].line,
+                functionName: functions[j].name,
+                data: data,
+              });
+            }
+          } else if (j === functions.length - 1 && i > functions[j].line) {
+            id = variables[j].functionData[0].data.filter(
+              (d) => d.name === nextId
+            );
+            if (id.length !== 0) {
+              next = id[0].value + nextVal;
+              data.next = next;
+            }
+
+            data.end = variables[j].functionData[0].data.filter(
+              (v) => v.name === endId
+            )[0].value;
+
+            loops.push({
+              functionLine: functions[j].line,
+              functionName: functions[j].name,
+              data: data,
+            });
+          }
+        }
       }
     }
 
-    loops.push(data);
-    //console.log(loops);
-
-    if (loops[0] !== undefined) {
-      return loops;
-    } else {
-      return [];
+    var render = [];
+    for (var r in loops) {
+      if (traversed.lastIndexOf(loops[r].data.line) !== -1) {
+        render.push(loops[r]);
+      }
     }
+    return render;
   }
 
   getClassName() {
@@ -277,18 +356,18 @@ export class VisualizerSpace extends React.Component {
     var line = this.state.lineNumber;
     var codeData = this.state.codeData;
     if (code[line] !== undefined) {
-      funcClass = code[line].includes("function") 
-      ? "table-highlight" 
-      : "table-not-highlight";
+      funcClass = code[line].includes("function")
+        ? "table-highlight"
+        : "table-not-highlight";
       ifClass = code[line].includes("if")
         ? "table-highlight"
         : "table-not-highlight";
       loopClass = code[line].includes("repeat")
         ? "table-highlight"
         : "table-not-highlight";
-      printClass = code[line+1].includes("print")
+      printClass = code[line + 1].includes("print")
         ? "table-highlight"
-        : "table-not-highlight"
+        : "table-not-highlight";
       if (line > 0) {
         varClass =
           codeData[0].Value.length !== 0
@@ -320,17 +399,17 @@ export class VisualizerSpace extends React.Component {
           </Col>
           <Col className="col-6">
             <p className={classList.print + " p text-center p-box"}>
-              Print: {this.getPrint()}
+              {/*  Print: {this.getPrint()} */}
             </p>
           </Col>
         </Row>
         <Row>
           <Col className="col-12">
             <div className="p text-center py-1 mb-3 p-box">
-              External Libraries:
+              {/* External Libraries:
               {this.getExternals().map((lib, i) => (
                 <p key={i}>{lib}</p>
-              ))}
+              ))} */}
             </div>
           </Col>
         </Row>
@@ -338,7 +417,7 @@ export class VisualizerSpace extends React.Component {
         <div>
           <p className="p text-center">Program Area:</p>
           {this.getFunctions().map((func, i) => (
-            <Row key={i}>
+            <Row key={i} className="mb-2">
               <Col className="col-12">
                 <div className="p text-center p-3 p-box">
                   <Row className="mb-2">
@@ -414,15 +493,17 @@ export class VisualizerSpace extends React.Component {
                               <td colspan="2">Name</td>
                               <td colspan="2">Value</td>
                             </tr>
-                            {this.getVariables().map((line) =>
-                              line.data.map((data, i) => (
-                                <tr key={i}>
-                                  <td colspan="2">{data.type}</td>
-                                  <td colspan="2">{data.name}</td>
-                                  <td colspan="2">{data.value}</td>
-                                </tr>
-                              ))
-                            )}
+                            {this.getVariables()
+                              .filter((f) => f.function === func.name)[0]
+                              .functionData.map((line) =>
+                                line.data.map((data, i) => (
+                                  <tr key={i}>
+                                    <td colspan="2">{data.type}</td>
+                                    <td colspan="2">{data.name}</td>
+                                    <td colspan="2">{data.value}</td>
+                                  </tr>
+                                ))
+                              )}
                           </tbody>
                         </Table>
                       </div>
@@ -449,12 +530,14 @@ export class VisualizerSpace extends React.Component {
                               <td colspan="4">Condition</td>
                               <td colspan="2">Result</td>
                             </tr>
-                            {this.getConditions().map((line) => (
-                              <tr>
-                                <td colspan="4">{line.condition}</td>
-                                <td colspan="2">{line.value}</td>
-                              </tr>
-                            ))}
+                            {this.getConditions()
+                              .filter((cond) => cond.functionLine === func.line)
+                              .map((line) => (
+                                <tr>
+                                  <td colspan="4">{line.data.condition}</td>
+                                  <td colspan="2">{line.data.value}</td>
+                                </tr>
+                              ))}
                           </tbody>
                         </Table>
                       </div>
@@ -480,14 +563,16 @@ export class VisualizerSpace extends React.Component {
                               <td colspan="1">End Value</td>
                               <td colspan="1">Next</td>
                             </tr>
-                            {this.getLoops().map((data) => (
-                              <tr>
-                                <td colspan="3">{data.range}</td>
-                                <td colspan="1">{data.start}</td>
-                                <td colspan="1">{data.end}</td>
-                                <td colspan="1">{data.next}</td>
-                              </tr>
-                            ))}
+                            {this.getLoops()
+                              .filter((loop) => loop.functionLine === func.line)
+                              .map((data) => (
+                                <tr>
+                                  <td colspan="3">{data.data.range}</td>
+                                  <td colspan="1">{data.data.start}</td>
+                                  <td colspan="1">{data.data.end}</td>
+                                  <td colspan="1">{data.data.next}</td>
+                                </tr>
+                              ))}
                           </tbody>
                         </Table>
                       </div>

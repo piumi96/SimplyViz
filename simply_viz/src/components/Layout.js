@@ -5,7 +5,8 @@ import MetaTags from "react-meta-tags";
 
 import "./layout.css";
 import {CodeSpace} from "./Code Space/codeSpace"
-import {VisualizerSpace} from './Visualizer Space/visualizerSpace';
+//import {VisualizerSpace} from './Visualizer Space/visualizerSpace';
+import {Visualizer} from "./Visualizer Space/Visualizer";
 
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -61,7 +62,8 @@ export class Layout extends React.Component {
               <CodeSpace getCodeData={this.handleCodeData} />
             </Col>
             <Col className="col-8 m-2 p-3 outer" id="visualizer">
-              <VisualizerSpace getCodeData={this.state} key={this.state.key} />
+              <Visualizer getCodeData={this.state} key={this.state.key} />
+              {/* <VisualizerSpace getCodeData={this.state} key={this.state.key} /> */}
             </Col>
           </Row>
         </Container>

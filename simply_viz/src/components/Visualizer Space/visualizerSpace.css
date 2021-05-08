@@ -1,48 +1,69 @@
 h3 {
-    font-weight: 800;
+  font-weight: 800;
 }
 
-th, td {
-    padding: 0.25rem !important;
+th,
+td {
+  padding: 0.25rem !important;
 }
 
 .p-box {
-    border-width:3px;
-    border: solid;
-    border-color:  #8595EA; 
-    border-radius: 5px;
+  border-width: 3px;
+  border: solid;
+  border-color: #8595ea;
+  border-radius: 5px;
 }
 
 .table-outer {
-    border-radius: 5px !important;
-    padding: 0.25rem;
+  border-radius: 5px !important;
+  padding: 0.25rem;
 }
 
 .table-func {
-    background-color: #8595EA;
-    text-align:left;
+  background-color: #8595ea;
+  text-align: left;
 }
 
 .table-var {
-    background-color: #006ACB; 
-    text-align:left;
+  background-color: #006acb;
+  text-align: left;
 }
 
 .table-if {
-    background-color: #99DA2E; 
-    text-align:left;
+  background-color: #99da2e;
+  text-align: left;
 }
 
 .table-loop {
-    background-color: #FA9D63;
-    text-align:left;
+  background-color: #fa9d63;
+  text-align: left;
 }
 
 .table-highlight {
-    background-color: #FEE494 !important;
+  background-color: #fee494 !important;
 }
 
 .table-not-highlight {
-    background-color: white;
+  background-color: white;
 }
 
+.tabClass {
+  border: 4px solid #8595ea !important;
+  border-top-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+  border-top: 4px solid #8595ea !important;
+  border-right: 4px solid #8595ea !important;
+  border-left: 4px solid #8595ea !important;
+  border-bottom: 0 !important;
+  background-color:#8595ea !important;
+  color:white !important
+}
+
+.nav-tabs .nav-link{
+    color:#8595ea !important;
+}

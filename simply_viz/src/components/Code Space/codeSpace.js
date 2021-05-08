@@ -7,8 +7,8 @@ import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 
-var data = require("./assets/code1.json");
-var sourceMap = require("./assets/sourceMap1.json");
+var data = require("./assets/code.json");
+var sourceMap = require("./assets/sourceMap.json");
 var currentLine = 0;
 var codeOrder, interval;
 var next,
@@ -22,7 +22,7 @@ export class CodeSpace extends React.Component {
 
     this.state = {
       code: [
-        /* "function main(in: ) out: no {",
+        "function main(in: ) out: no {",
         "integer a = 3;",
         "integer b = 4;",
         "integer sum = 0;",
@@ -37,8 +37,8 @@ export class CodeSpace extends React.Component {
         "",
         "function add(in: integer a, integer b) out: integer {",
         "return a + b;",
-        "}", */
-        "function main(in: ) out: no {",
+        "}",
+        /* "function main(in: ) out: no {",
         "integer a = 3;",
         "integer b = 4;",
         "integer sum = 0;",
@@ -49,7 +49,7 @@ export class CodeSpace extends React.Component {
         "sum = sum + 1;",
         "}",
         "display(\"sum =\" + sum);",
-        "}",
+        "}", */
       ],
       currentLine: -1,
       lineData: [],

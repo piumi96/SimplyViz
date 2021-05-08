@@ -4,6 +4,9 @@ import "./visualizerSpace.css";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Table from "react-bootstrap/Table";
+import Tabs from "react-bootstrap/Tabs";
+import Tab from "react-bootstrap/Tab";
+import TabContent from "react-bootstrap/TabContent";
 
 var imports = [];
 var functions = [];
@@ -38,9 +41,12 @@ export class Visualizer extends React.Component {
     this.getConditions = this.getConditions.bind(this);
     this.getLoops = this.getLoops.bind(this);
     this.getClassName = this.getClassName.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
 
     this.getFunctions();
   }
+
+  handleSelect() {}
 
   intializeData() {
     variables = [];
@@ -68,7 +74,7 @@ export class Visualizer extends React.Component {
     var codeBlock = this.state.code;
     var data = "";
 
-    for(var i=1; i<codeBlock.length-1; i++){
+    for (var i = 1; i < codeBlock.length - 1; i++) {
       var codeData = this.state.codeData[0].Value;
       var code = codeBlock[i + 1];
 
@@ -77,41 +83,39 @@ export class Visualizer extends React.Component {
           code.lastIndexOf("display(") + 8,
           code.lastIndexOf(");")
         );
-        
+
         dataId = dataId.split("+");
         data = "";
 
-        for(var j in dataId){
+        for (var j in dataId) {
           dataId[j] = dataId[j].trim(" ");
-          if(dataId[j].indexOf('"') === 0){
+          if (dataId[j].indexOf('"') === 0) {
             data += dataId[j].slice(1, -1) + " ";
-          }
-          else{
-            for(var key in codeData){
+          } else {
+            for (var key in codeData) {
               dataId[j] = dataId[j];
-              if(key === dataId[j]){
+              if (key === dataId[j]) {
                 data += codeData[key] + " ";
                 break;
               }
             }
           }
         }
-        
+
         printData.push({
           line: i,
-          data: data
+          data: data,
         });
 
         //console.log(printData);
       }
     }
-    
+
     var render = [];
     for (var p in printData) {
-      if (traversed.lastIndexOf(printData[p].line) !== -1 ) {
+      if (traversed.lastIndexOf(printData[p].line) !== -1) {
         render.push(printData[p]);
-      }
-      else if(printData[p].line === line){
+      } else if (printData[p].line === line) {
         render.push(printData[p]);
       }
     }
@@ -284,7 +288,7 @@ export class Visualizer extends React.Component {
         }
       }
     }
-    //console.log(variables);
+
     return variables;
   }
 
@@ -330,7 +334,7 @@ export class Visualizer extends React.Component {
         for (var j = 0; j < functions.length; j++) {
           if (j < functions.length - 1) {
             if (i > functions[j].line && i < functions[j + 1].line) {
-              if(variables[j].functionData[0].length !== 0){
+              if (variables[j].functionData[0].length !== 0) {
                 id = variables[j].functionData[0].data.filter(
                   (d) => d.name === nextId
                 );
@@ -338,7 +342,7 @@ export class Visualizer extends React.Component {
                   next = id[0].value + nextVal;
                   data.next = next;
                 }
-  
+
                 data.end = variables[j].functionData[0].data.filter(
                   (v) => v.name === endId
                 )[0].value;
@@ -351,7 +355,7 @@ export class Visualizer extends React.Component {
               });
             }
           } else if (j === functions.length - 1 && i > functions[j].line) {
-            if(variables[j].functionData.length !== 0){
+            if (variables[j].functionData.length !== 0) {
               id = variables[j].functionData[0].data.filter(
                 (d) => d.name === nextId
               );
@@ -359,7 +363,7 @@ export class Visualizer extends React.Component {
                 next = id[0].value + nextVal;
                 data.next = next;
               }
-  
+
               data.end = variables[j].functionData[0].data.filter(
                 (v) => v.name === endId
               )[0].value;
@@ -457,6 +461,197 @@ export class Visualizer extends React.Component {
         </Row>
 
         <div>
+          <p className="p text-center">Program Area:</p>
+          <Tabs>
+            {this.getFunctions().map((func, i) => (
+              <Tab
+                key={i}
+                eventKey={i}
+                onSelect={this.handleSelect}
+                title={"Function: " + func.name}
+                className="tabClass"
+              >
+                <TabContent>
+                  <Row key={i} className="mb-2">
+                    <Col className="col-12">
+                      <div className="p text-center p-3">
+                        <Row className="mb-2">
+                          <Col className="col-6">
+                            <div
+                              className={
+                                classList.function +
+                                " table-responsive table-outer"
+                              }
+                            >
+                              <Table className="table-bordered text-light table-func">
+                                <thead>
+                                  <tr>
+                                    <th scope="col" colspan="2">
+                                      Function :
+                                    </th>
+                                    <th scope="col" colspan="4">
+                                      {func.name}
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td colspan="1">Parameter</td>
+                                    <td colspan="1">Data type</td>
+                                    <td colspan="1">Name</td>
+                                    {/* <td colspan="1">Value</td> */}
+                                  </tr>
+                                  <tr>
+                                    <td colspan="1">In</td>
+                                    <td colspan="1">
+                                      {func.in.map((obj) => (
+                                        <p className="p-0 m-0">{obj.type}</p>
+                                      ))}
+                                    </td>
+                                    <td colspan="1">
+                                      {func.in.map((obj) => (
+                                        <p className="p-0 m-0">{obj.name}</p>
+                                      ))}
+                                    </td>
+                                    {/* <td colspan="1">
+                                {func.in.map((obj) => (
+                                  <p className="p-0 m-0">{obj.value}</p>
+                                ))}
+                              </td> */}
+                                  </tr>
+                                  <tr>
+                                    <td colspan="1">Out</td>
+                                    <td colspan="1">{func.out}</td>
+                                    <td colspan="1"></td>
+                                    {/* <td colspan="1"></td> */}
+                                  </tr>
+                                </tbody>
+                              </Table>
+                            </div>
+                          </Col>
+                          <Col className="col-6">
+                            <div
+                              className={
+                                classList.variable +
+                                " table-responsive table-outer"
+                              }
+                            >
+                              <Table className="table-bordered text-light table-var">
+                                <thead>
+                                  <tr>
+                                    <th scope="col" colspan="6">
+                                      Variables and Constants:
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td colspan="2">Data type</td>
+                                    <td colspan="2">Name</td>
+                                    <td colspan="2">Value</td>
+                                  </tr>
+                                  {this.getVariables()
+                                    .filter((f) => f.function === func.name)[0]
+                                    .functionData.map((line) =>
+                                      line.data.map((data, i) => (
+                                        <tr key={i}>
+                                          <td colspan="2">{data.type}</td>
+                                          <td colspan="2">{data.name}</td>
+                                          <td colspan="2">{data.value}</td>
+                                        </tr>
+                                      ))
+                                    )}
+                                </tbody>
+                              </Table>
+                            </div>
+                          </Col>
+                        </Row>
+
+                        <Row>
+                          <Col className="col-6">
+                            <div
+                              className={
+                                classList.condition +
+                                " table-responsive table-outer"
+                              }
+                            >
+                              <Table className="table-bordered text-light table-if">
+                                <thead>
+                                  <tr>
+                                    <th scope="col" colspan="6">
+                                      IF conditions :
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td colspan="4">Condition</td>
+                                    <td colspan="2">Result</td>
+                                  </tr>
+                                  {this.getConditions()
+                                    .filter(
+                                      (cond) => cond.functionLine === func.line
+                                    )
+                                    .map((line) => (
+                                      <tr>
+                                        <td colspan="4">
+                                          {line.data.condition}
+                                        </td>
+                                        <td colspan="2">{line.data.value}</td>
+                                      </tr>
+                                    ))}
+                                </tbody>
+                              </Table>
+                            </div>
+                          </Col>
+                          <Col className="col-6">
+                            <div
+                              className={
+                                classList.loop + " table-responsive table-outer"
+                              }
+                            >
+                              <Table className="table-bordered text-light table-loop">
+                                <thead>
+                                  <tr>
+                                    <th scope="col" colspan="6">
+                                      Loops :
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td colspan="3">Range</td>
+                                    <td colspan="1">Start Value</td>
+                                    <td colspan="1">End Value</td>
+                                    <td colspan="1">Next</td>
+                                  </tr>
+                                  {this.getLoops()
+                                    .filter(
+                                      (loop) => loop.functionLine === func.line
+                                    )
+                                    .map((data) => (
+                                      <tr>
+                                        <td colspan="3">{data.data.range}</td>
+                                        <td colspan="1">{data.data.start}</td>
+                                        <td colspan="1">{data.data.end}</td>
+                                        <td colspan="1">{data.data.next}</td>
+                                      </tr>
+                                    ))}
+                                </tbody>
+                              </Table>
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
+                    </Col>
+                  </Row>
+                </TabContent>
+              </Tab>
+            ))}
+          </Tabs>
+        </div>
+
+        {/* <div>
           <p className="p text-center">Program Area:</p>
           {this.getFunctions().map((func, i) => (
             <Row key={i} className="mb-2">
@@ -624,7 +819,7 @@ export class Visualizer extends React.Component {
               </Col>
             </Row>
           ))}
-        </div>
+        </div> */}
         <script
           src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
           integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"

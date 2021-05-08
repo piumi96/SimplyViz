@@ -17,6 +17,7 @@ var printData = [];
 var classList;
 var loops = [];
 var dataTypes = ["integer", "float", "boolean", "string", "character"];
+var activeTab = 0;
 
 export class Visualizer extends React.Component {
   constructor(props) {
@@ -26,6 +27,7 @@ export class Visualizer extends React.Component {
       codeData: this.props.getCodeData.codeData,
       codeOrder: this.props.getCodeData.codeOrder,
       lineNumber: this.props.getCodeData.lineNumber,
+      activeTab: 0,
     };
 
     imports = [];
@@ -42,11 +44,16 @@ export class Visualizer extends React.Component {
     this.getLoops = this.getLoops.bind(this);
     this.getClassName = this.getClassName.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
+    this.switchTab = this.switchTab.bind(this);
 
     this.getFunctions();
   }
 
-  handleSelect() {}
+  handleSelect(i) {
+    activeTab = i;
+    //this.setState({activeTab : activeTab});
+    //this.forceUpdate();
+  }
 
   intializeData() {
     variables = [];
@@ -62,6 +69,27 @@ export class Visualizer extends React.Component {
     }
 
     traversed = codeOrder.slice(0, codeOrder.lastIndexOf(line + 1));
+  }
+
+  switchTab(l) {
+    var line = this.state.lineNumber + 1;
+    activeTab = 0;
+    for (var j = 0; j < functions.length; j++) {
+      console.log(functions[j].line);
+      if (j < functions.length - 1) {
+        if (
+          j < functions.length - 1 &&
+          line > functions[j].line &&
+          line < functions[j + 1].line
+        ) {
+          activeTab = j;
+        }
+      } else if (j === functions.length - 1 && line >= functions[j].line) {
+        activeTab = j;
+      }
+    }
+    console.log(activeTab);
+    return activeTab;
   }
 
   getKeyIn() {
@@ -431,6 +459,7 @@ export class Visualizer extends React.Component {
 
   render() {
     this.getClassName();
+    //this.switchTab();
     return (
       <div>
         <h3 class="h3 text-center pb-3">Visualization Panel</h3>
@@ -462,12 +491,11 @@ export class Visualizer extends React.Component {
 
         <div>
           <p className="p text-center">Program Area:</p>
-          <Tabs>
+          <Tabs activeKey={this.switchTab()}>
             {this.getFunctions().map((func, i) => (
               <Tab
-                key={i}
                 eventKey={i}
-                onSelect={this.handleSelect}
+                onSelect={this.handleSelect()}
                 title={"Function: " + func.name}
                 className="tabClass"
               >
@@ -651,175 +679,6 @@ export class Visualizer extends React.Component {
           </Tabs>
         </div>
 
-        {/* <div>
-          <p className="p text-center">Program Area:</p>
-          {this.getFunctions().map((func, i) => (
-            <Row key={i} className="mb-2">
-              <Col className="col-12">
-                <div className="p text-center p-3 p-box">
-                  <Row className="mb-2">
-                    <Col className="col-6">
-                      <div
-                        className={
-                          classList.function + " table-responsive table-outer"
-                        }
-                      >
-                        <Table className="table-bordered text-light table-func">
-                          <thead>
-                            <tr>
-                              <th scope="col" colspan="2">
-                                Function :
-                              </th>
-                              <th scope="col" colspan="4">
-                                {func.name}
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td colspan="1">Parameter</td>
-                              <td colspan="1">Data type</td>
-                              <td colspan="1">Name</td>
-                              <td colspan="1">Value</td>
-                            </tr>
-                            <tr>
-                              <td colspan="1">In</td>
-                              <td colspan="1">
-                                {func.in.map((obj) => (
-                                  <p className="p-0 m-0">{obj.type}</p>
-                                ))}
-                              </td>
-                              <td colspan="1">
-                                {func.in.map((obj) => (
-                                  <p className="p-0 m-0">{obj.name}</p>
-                                ))}
-                              </td>
-                              <td colspan="1">
-                                {func.in.map((obj) => (
-                                  <p className="p-0 m-0">{obj.value}</p>
-                                ))}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td colspan="1">Out</td>
-                              <td colspan="1">{func.out}</td>
-                              <td colspan="1"></td>
-                              <td colspan="1"></td>
-                            </tr>
-                          </tbody>
-                        </Table>
-                      </div>
-                    </Col>
-                    <Col className="col-6">
-                      <div
-                        className={
-                          classList.variable + " table-responsive table-outer"
-                        }
-                      >
-                        <Table className="table-bordered text-light table-var">
-                          <thead>
-                            <tr>
-                              <th scope="col" colspan="6">
-                                Variables and Constants:
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td colspan="2">Data type</td>
-                              <td colspan="2">Name</td>
-                              <td colspan="2">Value</td>
-                            </tr>
-                            {this.getVariables()
-                              .filter((f) => f.function === func.name)[0]
-                              .functionData.map((line) =>
-                                line.data.map((data, i) => (
-                                  <tr key={i}>
-                                    <td colspan="2">{data.type}</td>
-                                    <td colspan="2">{data.name}</td>
-                                    <td colspan="2">{data.value}</td>
-                                  </tr>
-                                ))
-                              )}
-                          </tbody>
-                        </Table>
-                      </div>
-                    </Col>
-                  </Row>
-
-                  <Row>
-                    <Col className="col-6">
-                      <div
-                        className={
-                          classList.condition + " table-responsive table-outer"
-                        }
-                      >
-                        <Table className="table-bordered text-light table-if">
-                          <thead>
-                            <tr>
-                              <th scope="col" colspan="6">
-                                IF conditions :
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td colspan="4">Condition</td>
-                              <td colspan="2">Result</td>
-                            </tr>
-                            {this.getConditions()
-                              .filter((cond) => cond.functionLine === func.line)
-                              .map((line) => (
-                                <tr>
-                                  <td colspan="4">{line.data.condition}</td>
-                                  <td colspan="2">{line.data.value}</td>
-                                </tr>
-                              ))}
-                          </tbody>
-                        </Table>
-                      </div>
-                    </Col>
-                    <Col className="col-6">
-                      <div
-                        className={
-                          classList.loop + " table-responsive table-outer"
-                        }
-                      >
-                        <Table className="table-bordered text-light table-loop">
-                          <thead>
-                            <tr>
-                              <th scope="col" colspan="6">
-                                Loops :
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td colspan="3">Range</td>
-                              <td colspan="1">Start Value</td>
-                              <td colspan="1">End Value</td>
-                              <td colspan="1">Next</td>
-                            </tr>
-                            {this.getLoops()
-                              .filter((loop) => loop.functionLine === func.line)
-                              .map((data) => (
-                                <tr>
-                                  <td colspan="3">{data.data.range}</td>
-                                  <td colspan="1">{data.data.start}</td>
-                                  <td colspan="1">{data.data.end}</td>
-                                  <td colspan="1">{data.data.next}</td>
-                                </tr>
-                              ))}
-                          </tbody>
-                        </Table>
-                      </div>
-                    </Col>
-                  </Row>
-                </div>
-              </Col>
-            </Row>
-          ))}
-        </div> */}
         <script
           src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
           integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"

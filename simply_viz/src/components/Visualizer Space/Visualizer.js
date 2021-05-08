@@ -9,8 +9,8 @@ var imports = [];
 var functions = [];
 var variables = [];
 var conditions = [];
-var render,
-  traversed = [];
+var traversed = [];
+var printData = [];
 var classList;
 var loops = [];
 var dataTypes = ["integer", "float", "boolean", "string", "character"];
@@ -63,25 +63,59 @@ export class Visualizer extends React.Component {
   }
 
   getPrint() {
+    printData = [];
     var line = this.state.lineNumber;
+    var codeBlock = this.state.code;
     var data = "";
-    if (line > 0) {
+
+    for(var i=1; i<codeBlock.length-1; i++){
       var codeData = this.state.codeData[0].Value;
-      var code = this.state.code[line + 1];
+      var code = codeBlock[i + 1];
+
       if (code.includes("display")) {
         var dataId = code.slice(
           code.lastIndexOf("display(") + 8,
           code.lastIndexOf(");")
         );
-        for (var key in codeData) {
-          if (key === dataId) {
-            data = codeData[key];
-            break;
+        
+        dataId = dataId.split("+");
+        data = "";
+
+        for(var j in dataId){
+          dataId[j] = dataId[j].trim(" ");
+          if(dataId[j].indexOf('"') === 0){
+            data += dataId[j].slice(1, -1) + " ";
+          }
+          else{
+            for(var key in codeData){
+              dataId[j] = dataId[j];
+              if(key === dataId[j]){
+                data += codeData[key] + " ";
+                break;
+              }
+            }
           }
         }
+        
+        printData.push({
+          line: i,
+          data: data
+        });
+
+        //console.log(printData);
       }
     }
-    return data;
+    
+    var render = [];
+    for (var p in printData) {
+      if (traversed.lastIndexOf(printData[p].line) !== -1 ) {
+        render.push(printData[p]);
+      }
+      else if(printData[p].line === line){
+        render.push(printData[p]);
+      }
+    }
+    return render;
   }
 
   getExternals() {
@@ -89,8 +123,8 @@ export class Visualizer extends React.Component {
     var data = "";
     if (line >= 0) {
       var code = this.state.code[line];
-      if (code.includes("import")) {
-        data = code.slice(7, code.lastIndexOf(";"));
+      if (code.includes("get ")) {
+        data = code.slice(4, code.lastIndexOf(";"));
       }
     }
     imports.push(data);
@@ -260,7 +294,7 @@ export class Visualizer extends React.Component {
     var range, start, endId, end, nextId, nextVal, data;
     var next = "";
 
-    for (var i = 1; i < code.length; i++) {
+    for (var i = 2; i < code.length; i++) {
       if (code[i].includes("repeat")) {
         range = code[i]
           .slice(
@@ -296,17 +330,19 @@ export class Visualizer extends React.Component {
         for (var j = 0; j < functions.length; j++) {
           if (j < functions.length - 1) {
             if (i > functions[j].line && i < functions[j + 1].line) {
-              id = variables[j].functionData[0].data.filter(
-                (d) => d.name === nextId
-              );
-              if (id.length !== 0) {
-                next = id[0].value + nextVal;
-                data.next = next;
+              if(variables[j].functionData[0].length !== 0){
+                id = variables[j].functionData[0].data.filter(
+                  (d) => d.name === nextId
+                );
+                if (id.length !== 0) {
+                  next = id[0].value + nextVal;
+                  data.next = next;
+                }
+  
+                data.end = variables[j].functionData[0].data.filter(
+                  (v) => v.name === endId
+                )[0].value;
               }
-
-              data.end = variables[j].functionData[0].data.filter(
-                (v) => v.name === endId
-              )[0].value;
 
               loops.push({
                 functionLine: functions[j].line,
@@ -315,17 +351,19 @@ export class Visualizer extends React.Component {
               });
             }
           } else if (j === functions.length - 1 && i > functions[j].line) {
-            id = variables[j].functionData[0].data.filter(
-              (d) => d.name === nextId
-            );
-            if (id.length !== 0) {
-              next = id[0].value + nextVal;
-              data.next = next;
+            if(variables[j].functionData.length !== 0){
+              id = variables[j].functionData[0].data.filter(
+                (d) => d.name === nextId
+              );
+              if (id.length !== 0) {
+                next = id[0].value + nextVal;
+                data.next = next;
+              }
+  
+              data.end = variables[j].functionData[0].data.filter(
+                (v) => v.name === endId
+              )[0].value;
             }
-
-            data.end = variables[j].functionData[0].data.filter(
-              (v) => v.name === endId
-            )[0].value;
 
             loops.push({
               functionLine: functions[j].line,
@@ -343,6 +381,7 @@ export class Visualizer extends React.Component {
         render.push(loops[r]);
       }
     }
+
     return render;
   }
 
@@ -398,18 +437,21 @@ export class Visualizer extends React.Component {
             </p>
           </Col>
           <Col className="col-6">
-            <p className={classList.print + " p text-center p-box"}>
-              {/*  Print: {this.getPrint()} */}
+            <p className={classList.print + " p pl-3 p-box"}>
+              Display:
+              {this.getPrint().map((p, i) => (
+                <p key={i}>{p.data}</p>
+              ))}
             </p>
           </Col>
         </Row>
         <Row>
           <Col className="col-12">
             <div className="p text-center py-1 mb-3 p-box">
-              {/* External Libraries:
+              External Libraries:
               {this.getExternals().map((lib, i) => (
                 <p key={i}>{lib}</p>
-              ))} */}
+              ))}
             </div>
           </Col>
         </Row>

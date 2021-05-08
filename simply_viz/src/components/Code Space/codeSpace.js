@@ -48,7 +48,7 @@ export class CodeSpace extends React.Component {
         "repeat(integer i; range: 0 to a; next:1){",
         "sum = sum + 1;",
         "}",
-        "print(sum);",
+        "display(\"sum =\" + sum);",
         "}",
       ],
       currentLine: -1,

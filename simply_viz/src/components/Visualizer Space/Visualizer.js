@@ -423,7 +423,9 @@ export class Visualizer extends React.Component {
       varClass,
       ifClass,
       printClass,
-      loopClass = "table-not-highlight";
+      loopClass,
+      libClass, 
+      inputClass = "table-not-highlight";
     var code = this.state.code;
     var line = this.state.lineNumber;
     var codeData = this.state.codeData;
@@ -440,6 +442,12 @@ export class Visualizer extends React.Component {
       printClass = code[line + 1].includes("display")
         ? "table-highlight"
         : "table-not-highlight";
+      libClass = code[line].includes("get")
+        ? "table-highlight"
+        : "table-not-highlight";
+      inputClass = code[line].includes("input()")
+        ? "table-highlight"
+        : "table-not-highlight";
       if (line > 0) {
         varClass =
           codeData[0].Value.length !== 0
@@ -453,6 +461,8 @@ export class Visualizer extends React.Component {
         condition: ifClass,
         loop: loopClass,
         print: printClass,
+        lib: libClass,
+        input: inputClass
       };
       //console.log(classList);
     }
@@ -464,9 +474,10 @@ export class Visualizer extends React.Component {
       <div>
         <Row>
           <Col className="col-6">
-            <p className="p text-center p-box mb-3">
-              Keyboard input: {this.getKeyIn()}
-            </p>
+            <div className="p text-center p-box mb-3">
+              Keyboard input: 
+                <p className={classList.input}>{this.getKeyIn()}</p>
+            </div>
           </Col>
           <Col className=" col-5">
             <div className="p text-center mb-3 p-box">
@@ -487,7 +498,7 @@ export class Visualizer extends React.Component {
             <div className="p text-center py-1 mb-3 p-box">
               External Libraries:
               {this.getExternals().map((lib, i) => (
-                <p className="mb-0" key={i}>
+                <p className={classList.libClass + " mb-0"} key={i}>
                   {lib}
                 </p>
               ))}

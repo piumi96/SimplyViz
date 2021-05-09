@@ -1,5 +1,7 @@
 import React from "react";
-import "./visualizerSpace.css";
+//import "./visualizerSpace.css";
+import "./Visualizer.css";
+import rocket from "../Code Space/assets/rocket.png";
 
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -460,20 +462,24 @@ export class Visualizer extends React.Component {
     this.getClassName();
     return (
       <div>
-        <h3 class="h3 text-center pb-3">Visualization Panel</h3>
         <Row>
           <Col className="col-6">
-            <p className="p text-center p-box">
+            <p className="p text-center p-box mb-3">
               Keyboard input: {this.getKeyIn()}
             </p>
           </Col>
-          <Col className="col-6">
-            <div className={classList.print + " p text-center py-1 mb-3 p-box"}>
+          <Col className=" col-5">
+            <div className="p text-center mb-3 p-box">
               Display:
               {this.getPrint().map((p, i) => (
-                <p key={i}>{p.data}</p>
+                <p className={classList.print} key={i}>
+                  {p.data}
+                </p>
               ))}
             </div>
+          </Col>
+          <Col className="col-1">
+            <img className="img-rocket" src={rocket} alt="rocket"></img>
           </Col>
         </Row>
         <Row>
@@ -481,14 +487,16 @@ export class Visualizer extends React.Component {
             <div className="p text-center py-1 mb-3 p-box">
               External Libraries:
               {this.getExternals().map((lib, i) => (
-                <p key={i}>{lib}</p>
+                <p className="mb-0" key={i}>
+                  {lib}
+                </p>
               ))}
             </div>
           </Col>
         </Row>
 
         <div>
-          <p className="p text-center">Program Area:</p>
+          <p className="h4 text-center">Program Area:</p>
           <Tabs
             activeKey={activeTab}
             onSelect={(key) => this.handleSelect(key)}
@@ -511,8 +519,8 @@ export class Visualizer extends React.Component {
                                 " table-responsive table-outer"
                               }
                             >
-                              <Table className="table-bordered text-light table-func">
-                                <thead>
+                              <Table className="table-bordered text-light">
+                                <thead className="table-func-head">
                                   <tr>
                                     <th scope="col" colspan="2">
                                       Function :
@@ -521,14 +529,14 @@ export class Visualizer extends React.Component {
                                       {func.name}
                                     </th>
                                   </tr>
-                                </thead>
-                                <tbody>
                                   <tr>
                                     <td colspan="1">Parameter</td>
                                     <td colspan="1">Data type</td>
                                     <td colspan="1">Name</td>
                                     {/* <td colspan="1">Value</td> */}
                                   </tr>
+                                </thead>
+                                <tbody className="table-func">
                                   <tr>
                                     <td colspan="1">In</td>
                                     <td colspan="1">
@@ -564,20 +572,20 @@ export class Visualizer extends React.Component {
                                 " table-responsive table-outer"
                               }
                             >
-                              <Table className="table-bordered text-light table-var">
-                                <thead>
+                              <Table className="table-bordered text-light">
+                                <thead className="table-var-head">
                                   <tr>
                                     <th scope="col" colspan="6">
                                       Variables and Constants:
                                     </th>
                                   </tr>
-                                </thead>
-                                <tbody>
                                   <tr>
                                     <td colspan="2">Data type</td>
                                     <td colspan="2">Name</td>
                                     <td colspan="2">Value</td>
                                   </tr>
+                                </thead>
+                                <tbody className="table-var">
                                   {this.getVariables()
                                     .filter((f) => f.function === func.name)[0]
                                     .functionData.map((line) =>
@@ -603,19 +611,19 @@ export class Visualizer extends React.Component {
                                 " table-responsive table-outer"
                               }
                             >
-                              <Table className="table-bordered text-light table-if">
-                                <thead>
+                              <Table className="table-bordered text-light">
+                                <thead className="table-if-head">
                                   <tr>
                                     <th scope="col" colspan="6">
                                       IF conditions :
                                     </th>
                                   </tr>
-                                </thead>
-                                <tbody>
                                   <tr>
                                     <td colspan="4">Condition</td>
                                     <td colspan="2">Result</td>
                                   </tr>
+                                </thead>
+                                <tbody className="table-if">
                                   {this.getConditions()
                                     .filter(
                                       (cond) => cond.functionLine === func.line
@@ -638,21 +646,21 @@ export class Visualizer extends React.Component {
                                 classList.loop + " table-responsive table-outer"
                               }
                             >
-                              <Table className="table-bordered text-light table-loop">
-                                <thead>
+                              <Table className="table-bordered text-light">
+                                <thead className="table-loop-head">
                                   <tr>
                                     <th scope="col" colspan="6">
                                       Loops :
                                     </th>
                                   </tr>
-                                </thead>
-                                <tbody>
                                   <tr>
                                     <td colspan="3">Range</td>
                                     <td colspan="1">Start Value</td>
                                     <td colspan="1">End Value</td>
                                     <td colspan="1">Next</td>
                                   </tr>
+                                </thead>
+                                <tbody className="table-loop">
                                   {this.getLoops()
                                     .filter(
                                       (loop) => loop.functionLine === func.line

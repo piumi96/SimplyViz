@@ -48,9 +48,13 @@ export class Layout extends React.Component {
             href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300&display=swap"
             rel="stylesheet"
           ></link>
+          <script
+            src="https://kit.fontawesome.com/fbc9100e97.js"
+            crossorigin="anonymous"
+          ></script>
         </MetaTags>
 
-        <Navbar className="navbar navbar-dark  bg-dark">
+        <Navbar className="navbar navbar-dark d-none  bg-dark">
           <div className="container-fluid">
             <span className="navbar-brand mb-0 h1">Navbar</span>
           </div>

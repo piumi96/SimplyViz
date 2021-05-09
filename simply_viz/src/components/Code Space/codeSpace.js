@@ -1,14 +1,17 @@
 import React from "react";
 import "./codeSpace.css";
-import alien from "./assets/alien.png";
+import alien from "./assets/spacep.png";
 
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 
-var data = require("./assets/code.json");
-var sourceMap = require("./assets/sourceMap.json");
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStepBackward, faStop, faStepForward, faPlay, faPlayCircle } from "@fortawesome/free-solid-svg-icons";
+
+var data = require("./assets/code1.json");
+var sourceMap = require("./assets/sourceMap1.json");
 var currentLine = 0;
 var codeOrder, interval;
 var next,
@@ -22,7 +25,7 @@ export class CodeSpace extends React.Component {
 
     this.state = {
       code: [
-        "function main(in: ) out: no {",
+        /* "function main(in: ) out: no {",
         "integer a = 3;",
         "integer b = 4;",
         "integer sum = 0;",
@@ -37,8 +40,8 @@ export class CodeSpace extends React.Component {
         "",
         "function add(in: integer a, integer b) out: integer {",
         "return a + b;",
-        "}",
-        /* "function main(in: ) out: no {",
+        "}", */
+        "function main(in: ) out: no {",
         "integer a = 3;",
         "integer b = 4;",
         "integer sum = 0;",
@@ -48,8 +51,8 @@ export class CodeSpace extends React.Component {
         "repeat(integer i; range: 0 to a; next:1){",
         "sum = sum + 1;",
         "}",
-        "display(\"sum =\" + sum);",
-        "}", */
+        'display("sum =" + sum);',
+        "}",
       ],
       currentLine: -1,
       lineData: [],
@@ -122,22 +125,21 @@ export class CodeSpace extends React.Component {
     this.onVisualizeData(currentLine, repeat);
   }
 
-  onClickStop(){
+  onClickStop() {
     stop = true;
     clearInterval(interval);
   }
 
-  onClickStart(){
+  onClickStart() {
     stop = false;
     this.onClickNext();
-    if(!stop){
+    if (!stop) {
       interval = setInterval(() => {
-         if(next < codeOrder.length - 1){
-           this.onClickNext();
-         }
-         else{
-           this.onClickStop();
-         }
+        if (next < codeOrder.length - 1) {
+          this.onClickNext();
+        } else {
+          this.onClickStop();
+        }
       }, 1000);
     }
   }
@@ -180,48 +182,43 @@ export class CodeSpace extends React.Component {
   render() {
     return (
       <div>
-        <h3 className="h3 text-center pb-3">Code</h3>
-        <ol>
-          {this.state.code.map((line, i) => (
-            <li className={this.getClassName(i)} key={i}>
-              {line}{" "}
-            </li>
-          ))}
-        </ol>
-
         <Row>
-          <Col className="col-3 pl-1 pr-1">
-            <Button
-              className="btn btn-md btn-primary mb-3"
-              onClick={this.onClickBack}
-            >
-              Back
+          <Col className="col-12 pl-0">
+            <ol>
+              {this.state.code.map((line, i) => (
+                <li className={this.getClassName(i)} key={i}>
+                  {line}{" "}
+                </li>
+              ))}
+            </ol>
+          </Col>
+        </Row>
+
+        <Row> 
+          <Col className="flex-end">
+            <Button className="btn btn-primary mb-3" onClick={this.onClickBack}>
+              <FontAwesomeIcon icon={faStepBackward} />
             </Button>
           </Col>
-          <Col className="col-3 pl-1 pr-1">
-            <Button
-              className="btn btn-md btn-primary mb-3"
-              onClick={this.onClickStop}
-            >
-              Stop
+          <Col>
+            <Button className="btn btn-primary mb-3" onClick={this.onClickStop}>
+              <FontAwesomeIcon icon={faStop} />
             </Button>
           </Col>
-          <Col className="col-3 pl-1 pr-1">
+          <Col>
             <Button
-              className="btn btn-md btn-primary mb-3"
+              className="btn btn-primary mb-3"
               onClick={this.onClickStart}
             >
-              Start
+              <FontAwesomeIcon icon={faPlay} />
             </Button>
           </Col>
-          <Col className="col-3 pl-1 pr-1">
-            <Button
-              className="btn btn-md btn-primary mb-3"
-              onClick={this.onClickNext}
-            >
-              Next
+          <Col>
+            <Button className="btn btn-primary mb-3" onClick={this.onClickNext}>
+              <FontAwesomeIcon icon={faStepForward} />
             </Button>
           </Col>
+          
         </Row>
 
         {/* <Row>
@@ -235,17 +232,13 @@ export class CodeSpace extends React.Component {
             </Button>
           </Col>
           <Col className="col-2"></Col>
-        </Row>
- */}
+        </Row>*/}
         <Row>
           <Col className="col-2">
             <img className="img-alien" src={alien} alt="alien"></img>
           </Col>
           <Col className="col-10">
-            <Card
-              className="card text-light"
-              style={{ backgroundColor: "#6600C5" }}
-            >
+            <Card className="card text-light comment-box">
               <div className="card-body">
                 <h5 className="card-title">Comments :</h5>
                 <p class="card-text"></p>

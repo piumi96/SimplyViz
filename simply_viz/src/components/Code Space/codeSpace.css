@@ -1,21 +1,36 @@
+body{
+    background-image: url("./assets/space-bg.jpg");
+    background-size:cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
 h3 {
     font-weight: 800;
 }
 
 .img-alien {
-    width: 5rem;
-    height: 5rem;
-    margin-left: -50px;
+    width: 9rem;
+    height: 11rem;
+    margin-left: -120px;
+    -webkit-filter: drop-shadow(12px 12px 25px #33278383);
+    
 }
 
 .btn {
-    background-color: #8595EA !important;
+    background-color: #222e6a !important;
+    border: #222e6a !important;
+}
+
+.card-body {
+    background-color: #561E66;
+    border-radius: 2px;
 }
 
 .highlight {
-    background-color: #FEE494;
+    background-color: #ffc94cd0;
 }
 
-.not-highlight {
+/* .not-highlight {
     background-color: white;
-}
+} */

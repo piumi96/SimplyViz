@@ -94,7 +94,7 @@ export class Visualizer extends React.Component {
   }
 
   getKeyIn() {
-    return "none";
+    return [];
   }
 
   getPrint() {
@@ -475,15 +475,17 @@ export class Visualizer extends React.Component {
         <Row>
           <Col className="col-6">
             <div className="p text-center p-box mb-3">
-              Keyboard input: 
-                <p className={classList.input}>{this.getKeyIn()}</p>
+              Keyboard input:
+              {this.getKeyIn().map((k, i) => (
+                <p className={classList.input + " mb-0"}>{k}</p>
+              ))}
             </div>
           </Col>
           <Col className=" col-5">
             <div className="p text-center mb-3 p-box">
               Display:
               {this.getPrint().map((p, i) => (
-                <p className={classList.print} key={i}>
+                <p className={classList.print + " mb-0"} key={i}>
                   {p.data}
                 </p>
               ))}

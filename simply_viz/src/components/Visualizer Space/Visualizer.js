@@ -47,12 +47,13 @@ export class Visualizer extends React.Component {
     this.switchTab = this.switchTab.bind(this);
 
     this.getFunctions();
+    this.switchTab();
   }
 
-  handleSelect(i) {
-    activeTab = i;
-    //this.setState({activeTab : activeTab});
-    //this.forceUpdate();
+  handleSelect(key) {
+    activeTab = key;
+    console.log(activeTab);
+    this.setState({activeTab : activeTab});
   }
 
   intializeData() {
@@ -71,11 +72,10 @@ export class Visualizer extends React.Component {
     traversed = codeOrder.slice(0, codeOrder.lastIndexOf(line + 1));
   }
 
-  switchTab(l) {
+  switchTab() {
     var line = this.state.lineNumber + 1;
     activeTab = 0;
     for (var j = 0; j < functions.length; j++) {
-      console.log(functions[j].line);
       if (j < functions.length - 1) {
         if (
           j < functions.length - 1 &&
@@ -89,7 +89,6 @@ export class Visualizer extends React.Component {
       }
     }
     console.log(activeTab);
-    return activeTab;
   }
 
   getKeyIn() {
@@ -436,7 +435,7 @@ export class Visualizer extends React.Component {
       loopClass = code[line].includes("repeat")
         ? "table-highlight"
         : "table-not-highlight";
-      printClass = code[line + 1].includes("print")
+      printClass = code[line + 1].includes("display")
         ? "table-highlight"
         : "table-not-highlight";
       if (line > 0) {
@@ -459,7 +458,6 @@ export class Visualizer extends React.Component {
 
   render() {
     this.getClassName();
-    //this.switchTab();
     return (
       <div>
         <h3 class="h3 text-center pb-3">Visualization Panel</h3>
@@ -470,12 +468,12 @@ export class Visualizer extends React.Component {
             </p>
           </Col>
           <Col className="col-6">
-            <p className={classList.print + " p pl-3 p-box"}>
+            <div className={classList.print + " p text-center py-1 mb-3 p-box"}>
               Display:
               {this.getPrint().map((p, i) => (
                 <p key={i}>{p.data}</p>
               ))}
-            </p>
+            </div>
           </Col>
         </Row>
         <Row>
@@ -491,11 +489,13 @@ export class Visualizer extends React.Component {
 
         <div>
           <p className="p text-center">Program Area:</p>
-          <Tabs activeKey={this.switchTab()}>
+          <Tabs
+            activeKey={activeTab}
+            onSelect={(key) => this.handleSelect(key)}
+          >
             {this.getFunctions().map((func, i) => (
               <Tab
                 eventKey={i}
-                onSelect={this.handleSelect()}
                 title={"Function: " + func.name}
                 className="tabClass"
               >

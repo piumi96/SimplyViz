@@ -1,12 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import MetaTags from "react-meta-tags";
-//import Xarrow from "react-xarrows";
 
 import "./layout.css";
-import {CodeSpace} from "./Code Space/codeSpace"
+import { CodeSpace } from "./Code Space/codeSpace";
 //import {VisualizerSpace} from './Visualizer Space/visualizerSpace';
-import {Visualizer} from "./Visualizer Space/Visualizer";
+import { Visualizer } from "./Visualizer Space/Visualizer";
 
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -16,23 +15,35 @@ import Navbar from "react-bootstrap/Navbar";
 var key = -1;
 
 export class Layout extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       code: [],
       codeData: [],
       lineNumber: -1,
       codeOrder: [],
-      key: -1
+      key: -1,
+      vizData: null,
     };
 
     this.handleCodeData = this.handleCodeData.bind(this);
+    //this.handleVizData = this.handleVizData.bind(this);
   }
 
   handleCodeData(data, line, code, order) {
     key++;
-    this.setState({code: code, codeData: data, lineNumber: line, codeOrder: order, key: key});
+    this.setState({
+      code: code,
+      codeData: data,
+      lineNumber: line,
+      codeOrder: order,
+      key: key,
+    });
   }
+
+  /* handleVizData(vizData) {
+    this.setState({ vizData: vizData });
+  } */
 
   render() {
     return (
@@ -63,11 +74,18 @@ export class Layout extends React.Component {
         <Container className="container container-fluid">
           <Row className="row p-2">
             <Col className="col-3 m-2 p-3 outer" id="codeSpace">
-              <CodeSpace getCodeData={this.handleCodeData} />
+              <CodeSpace
+                getCodeData={this.handleCodeData}
+                /* getVizData={this.state.vizData}
+                key={this.state.key} */
+              />
             </Col>
             <Col className="col-8 m-2 p-3 outer" id="visualizer">
-              <Visualizer getCodeData={this.state} key={this.state.key} />
-              {/* <VisualizerSpace getCodeData={this.state} key={this.state.key} /> */}
+              <Visualizer
+                getCodeData={this.state}
+                key={this.state.key}
+                /* getVizData={this.handleVizData} */
+              />
             </Col>
           </Row>
         </Container>

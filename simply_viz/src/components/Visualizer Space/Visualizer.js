@@ -29,6 +29,7 @@ export class Visualizer extends React.Component {
       codeData: this.props.getCodeData.codeData,
       codeOrder: this.props.getCodeData.codeOrder,
       lineNumber: this.props.getCodeData.lineNumber,
+      vizData: null,
       activeTab: 0,
     };
 
@@ -50,11 +51,12 @@ export class Visualizer extends React.Component {
 
     this.getFunctions();
     this.switchTab();
+    //this.onVisualizeData();
   }
 
   handleSelect(key) {
     activeTab = key;
-    console.log(activeTab);
+    //console.log(activeTab);
     this.setState({activeTab : activeTab});
   }
 
@@ -90,11 +92,12 @@ export class Visualizer extends React.Component {
         activeTab = j;
       }
     }
-    console.log(activeTab);
   }
 
   getKeyIn() {
-    return [];
+    var render = [];
+    var line = this.state.lineNumber;
+    return render;
   }
 
   getPrint() {
@@ -152,6 +155,7 @@ export class Visualizer extends React.Component {
   }
 
   getExternals() {
+    imports = [];
     var line = this.state.lineNumber;
     var data = "";
     if (line >= 0) {
@@ -159,8 +163,8 @@ export class Visualizer extends React.Component {
       if (code.includes("get ")) {
         data = code.slice(4, code.lastIndexOf(";"));
       }
+      imports.push(data);
     }
-    imports.push(data);
     return imports;
   }
 
@@ -208,6 +212,7 @@ export class Visualizer extends React.Component {
     }
     //console.log(functions);
     this.intializeData();
+   
     return functions;
   }
 
@@ -317,7 +322,6 @@ export class Visualizer extends React.Component {
         }
       }
     }
-
     return variables;
   }
 
@@ -414,7 +418,6 @@ export class Visualizer extends React.Component {
         render.push(loops[r]);
       }
     }
-
     return render;
   }
 
@@ -464,12 +467,51 @@ export class Visualizer extends React.Component {
         lib: libClass,
         input: inputClass
       };
+
+      
       //console.log(classList);
     }
   }
 
+  /* onVisualizeData(){
+    var vizData = {};
+    var line = this.state.lineNumber;
+    console.log(line);
+
+    var functions = this.getFunctions();
+    var variables = this.getVariables();
+    var conditions = this.getConditions();
+    var loops = this.getLoops();
+    var keyins = this.getKeyIn();
+    var externals = this.getExternals();
+    var prints = this.getPrint();
+
+    vizData = {
+      line: line,
+      data: {
+        functions: functions,
+        variables: variables,
+        conditions: conditions,
+        loops: loops,
+        keyins: keyins,
+        externals: externals,
+        prints: prints
+      }
+    };
+
+    this.handleVisualize(vizData);
+    this.setState({vizData: vizData});
+  }
+
+  handleVisualize(vizData){
+    this.props.getVizData(vizData);
+  }
+ */
+  
+
   render() {
     this.getClassName();
+    
     return (
       <div>
         <Row>

@@ -1,0 +1,12 @@
+{
+    "functions": "A function is the main unit in a 'Simply' program. We always start a program inside the ‘main’ function.",
+    "insideFunctions": "Right now we are inside the function called ",
+    "variables": "This line is using variables. A variable is like a container that stores information. We can change the values stored using the computer program.",
+    "conditions": "This line is using an 'if' statement. We can tell a computer program what path to follow by using some conditions. If a condition is true the program can follow one path and if it's not it can follow another.",
+    "loops": "We use loops to tell a program to do something again and again. In 'Simply', we use a 'repeat' statement to do this.",
+    "keyins": "A program can take some data from the user (you) before running. They are called user inputs.",
+    "prints": "Sometimes we want to display some data to the screen for the user (you) to see. Here, we can use a 'display' statement.",
+    "externals": "Sometimes we can’t write all the instructions we need inside our program. When that happens we can get some other files to help us. These files are called external libraries",
+    "return": "A 'return' statement tells a function what it should output. The data type of the return value of a function should always match the type defined by the function's 'out' parameter."
+
+}

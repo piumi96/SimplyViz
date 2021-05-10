@@ -8,16 +8,25 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStepBackward, faStop, faStepForward, faPlay, faPlayCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faStepBackward,
+  faStop,
+  faStepForward,
+  faPlay,
+  faBookOpen,
+} from "@fortawesome/free-solid-svg-icons";
 
-var data = require("./assets/code1.json");
-var sourceMap = require("./assets/sourceMap1.json");
+var data = require("./assets/code.json");
+var sourceMap = require("./assets/sourceMap.json");
+var comments = require("./assets/comments.json");
+
 var currentLine = 0;
 var codeOrder, interval;
 var next,
   back = 0;
 var repeat = 0;
 var stop = true;
+var dataTypes = ["integer", "float", "boolean", "string", "character"];
 
 export class CodeSpace extends React.Component {
   constructor(props) {
@@ -25,7 +34,7 @@ export class CodeSpace extends React.Component {
 
     this.state = {
       code: [
-        /* "function main(in: ) out: no {",
+        "function main(in: ) out: no {",
         "integer a = 3;",
         "integer b = 4;",
         "integer sum = 0;",
@@ -40,8 +49,8 @@ export class CodeSpace extends React.Component {
         "",
         "function add(in: integer a, integer b) out: integer {",
         "return a + b;",
-        "}", */
-        "function main(in: ) out: no {",
+        "}",
+        /* "function main(in: ) out: no {",
         "integer a = 3;",
         "integer b = 4;",
         "integer sum = 0;",
@@ -52,10 +61,11 @@ export class CodeSpace extends React.Component {
         "sum = sum + 1;",
         "}",
         'display("sum =" + sum);',
-        "}",
+        "}", */
       ],
       currentLine: -1,
       lineData: [],
+      vizData: this.props.getVizData,
     };
 
     repeat = 0;
@@ -64,6 +74,7 @@ export class CodeSpace extends React.Component {
     this.onClickBack = this.onClickBack.bind(this);
     this.onClickStop = this.onClickStop.bind(this);
     this.onClickStart = this.onClickStart.bind(this);
+    this.onComments = this.onComments.bind(this);
 
     this.mapCodeOrder();
   }
@@ -82,19 +93,21 @@ export class CodeSpace extends React.Component {
   }
 
   onClickNext() {
+    //console.log(next);
     if (next < codeOrder.length - 1) {
       next++;
       back = next;
       currentLine = codeOrder[next];
+      console.log(next);
+      console.log(codeOrder[next]);
 
       if (codeOrder[next] !== codeOrder[next - 1]) {
         repeat = 0;
       } else {
         repeat++;
       }
-
-      //console.log("current line: " + currentLine);
     }
+
     this.onVisualizeData(currentLine, repeat);
     this.setState({ currentLine: currentLine });
   }
@@ -140,7 +153,7 @@ export class CodeSpace extends React.Component {
         } else {
           this.onClickStop();
         }
-      }, 1000);
+      }, 2000);
     }
   }
 
@@ -179,6 +192,46 @@ export class CodeSpace extends React.Component {
     this.props.getCodeData(data, line, code, order);
   }
 
+  onComments() {
+    var line = currentLine;
+    var code = this.state.code;
+    var commentData = "";
+    var funcName = "";
+
+    if (line < 1) {
+      commentData = comments.functions;
+      funcName = code[line].slice(
+        code[line].lastIndexOf("function") + 9,
+        code[line].lastIndexOf("in:") - 1
+      );
+      commentData += comments.insideFunctions + funcName;
+    } else if (code[line].includes("if") || code[line].includes("else")) {
+      commentData = comments.conditions;
+    } else if (code[line].includes("repeat")) {
+      commentData = comments.loops;
+    } else if (code[line].includes("display")) {
+      commentData = comments.prints;
+    } else if (code[line].includes("input()")) {
+      commentData = comments.keyins;
+    } else if (code[line].includes("get ")) {
+      commentData = comments.externals;
+    } else if (code[line].includes("return ")) {
+      commentData = comments.return;
+    } else {
+      for (var i in dataTypes) {
+        if (code[line].includes(dataTypes[i])) {
+          commentData =
+            comments.variables + " This variables is a " + dataTypes[i];
+          break;
+        }
+      }
+    }
+    var render = commentData.split(".");
+    console.log(render);
+    //return commentData;
+    return render;
+  }
+
   render() {
     return (
       <div>
@@ -194,7 +247,7 @@ export class CodeSpace extends React.Component {
           </Col>
         </Row>
 
-        <Row> 
+        <Row>
           <Col className="flex-end">
             <Button className="btn btn-primary mb-3" onClick={this.onClickBack}>
               <FontAwesomeIcon icon={faStepBackward} />
@@ -218,30 +271,20 @@ export class CodeSpace extends React.Component {
               <FontAwesomeIcon icon={faStepForward} />
             </Button>
           </Col>
-          
         </Row>
-
-        {/* <Row>
-          <Col className="col-2"></Col>
-          <Col className="col-8 pl-1 pr-1">
-            <Button
-              className="btn btn-md btn-primary mb-3 w-100"
-              onClick={this.onClickRestart}
-            >
-              RESTART
-            </Button>
-          </Col>
-          <Col className="col-2"></Col>
-        </Row>*/}
         <Row>
           <Col className="col-2">
             <img className="img-alien" src={alien} alt="alien"></img>
           </Col>
           <Col className="col-10">
             <Card className="card text-light comment-box">
-              <div className="card-body">
-                <h5 className="card-title">Comments :</h5>
-                <p class="card-text"></p>
+              <div className="card-body pb-0">
+                <h5 className="card-title">
+                  Notes : <FontAwesomeIcon icon={faBookOpen} />
+                </h5>
+                {this.onComments().map((i) => (
+                  <p>{i.trim(" ")}</p>
+                ))}
               </div>
             </Card>
           </Col>

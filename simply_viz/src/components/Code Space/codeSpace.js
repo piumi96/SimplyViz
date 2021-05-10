@@ -214,30 +214,41 @@ export class CodeSpace extends React.Component {
     var commentData = "";
     var funcName = "";
 
-    if (code[line].includes("function")) {
+    /* if (code[line].includes("function")) {
       commentData = comments.functions;
       funcName = code[line].slice(
         code[line].lastIndexOf("function") + 9,
         code[line].lastIndexOf("in:") - 1
       );
       commentData += comments.insideFunctions + funcName;
-    } else if (code[line].includes("if") || code[line].includes("else")) {
-      commentData = comments.conditions;
+    } else  */
+    if(line !== 0){
+      if(code[line-1].includes("function")){
+        funcName = code[line-1].slice(
+          code[line-1].lastIndexOf("function") + 9,
+          code[line-1].lastIndexOf("in:") - 1
+        );
+        commentData = comments.insideFunctions + funcName + ".";
+      }
+    }
+    
+    if (code[line].includes("if") || code[line].includes("else")) {
+      commentData += comments.conditions;
     } else if (code[line].includes("repeat")) {
-      commentData = comments.loops;
+      commentData += comments.loops;
     } else if (code[line].includes("display")) {
-      commentData = comments.prints;
+      commentData += comments.prints;
     } else if (code[line].includes("input()")) {
-      commentData = comments.keyins;
+      commentData += comments.keyins;
     } else if (code[line].includes("get ")) {
-      commentData = comments.externals;
+      commentData += comments.externals;
     } else if (code[line].includes("return ")) {
-      commentData = comments.return;
+      commentData += comments.return;
     } else {
       for (var i in dataTypes) {
         if (code[line].includes(dataTypes[i])) {
-          commentData =
-            comments.variables + " This variables is a " + dataTypes[i];
+          commentData +=
+            comments.variables + " This variables is a " + dataTypes[i] +". " + comments.varTable;
           break;
         }
       }

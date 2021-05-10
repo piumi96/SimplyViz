@@ -1,4 +1,5 @@
 {
+    "mainFunc": "A function is the main unit in a 'Simply' program. We always start a program inside the ‘main’ function. Right now we are inside the 'main' function.",
     "functions": "A function is the main unit in a 'Simply' program. We always start a program inside the ‘main’ function.",
     "insideFunctions": "Right now we are inside the function called ",
     "variables": "This line is using variables. A variable is like a container that stores information. We can change the values stored using the computer program.",

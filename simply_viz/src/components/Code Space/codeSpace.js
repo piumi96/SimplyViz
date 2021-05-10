@@ -6,6 +6,8 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Popover from "react-bootstrap/Popover";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,6 +16,7 @@ import {
   faStepForward,
   faPlay,
   faBookOpen,
+  faBackward,
 } from "@fortawesome/free-solid-svg-icons";
 
 var data = require("./assets/code.json");
@@ -27,6 +30,9 @@ var next,
 var repeat = 0;
 var stop = true;
 var dataTypes = ["integer", "float", "boolean", "string", "character"];
+var commentTag = 0;
+var commentNextClass = "btn-comment";
+var commentBackClass = "btn-comment d-none";
 
 export class CodeSpace extends React.Component {
   constructor(props) {
@@ -66,6 +72,8 @@ export class CodeSpace extends React.Component {
       currentLine: -1,
       lineData: [],
       vizData: this.props.getVizData,
+      commentData: comments.mainFunc.split(".").filter((i) => i !== ""),
+      commentTag: 0,
     };
 
     repeat = 0;
@@ -75,6 +83,8 @@ export class CodeSpace extends React.Component {
     this.onClickStop = this.onClickStop.bind(this);
     this.onClickStart = this.onClickStart.bind(this);
     this.onComments = this.onComments.bind(this);
+    this.onCommentNext = this.onCommentNext.bind(this);
+    this.onCommentBack = this.onCommentBack.bind(this);
 
     this.mapCodeOrder();
   }
@@ -90,6 +100,7 @@ export class CodeSpace extends React.Component {
     next = codeOrder.indexOf(currentLine);
     back = next;
     //console.log(codeOrder);
+    
   }
 
   onClickNext() {
@@ -107,9 +118,11 @@ export class CodeSpace extends React.Component {
         repeat++;
       }
     }
+    commentTag = 0;
 
+    this.onComments();
     this.onVisualizeData(currentLine, repeat);
-    this.setState({ currentLine: currentLine });
+    this.setState({ currentLine: currentLine, commentTag: commentTag });
   }
 
   onClickBack() {
@@ -134,7 +147,10 @@ export class CodeSpace extends React.Component {
 
       //console.log("current line: " + currentLine);
     }
-    this.setState({ currentLine: currentLine });
+    commentTag = 0;
+
+    this.onComments();
+    this.setState({ currentLine: currentLine, commentTag: commentTag });
     this.onVisualizeData(currentLine, repeat);
   }
 
@@ -198,7 +214,7 @@ export class CodeSpace extends React.Component {
     var commentData = "";
     var funcName = "";
 
-    if (line < 1) {
+    if (code[line].includes("function")) {
       commentData = comments.functions;
       funcName = code[line].slice(
         code[line].lastIndexOf("function") + 9,
@@ -226,10 +242,34 @@ export class CodeSpace extends React.Component {
         }
       }
     }
-    var render = commentData.split(".");
-    console.log(render);
-    //return commentData;
-    return render;
+    var render = commentData.split(".").filter((i) => i !== "");
+    this.setCommentClass(render);
+
+    this.setState({commentData: render});
+  }
+
+  onCommentNext() {
+    console.log(commentTag);
+    var comments = this.state.commentData;
+    if(commentTag !== comments.length-1){
+      commentTag++;
+    }
+    this.setCommentClass(comments);
+    this.setState({commentTag: commentTag});
+  }
+  
+  onCommentBack() {
+    var comments = this.state.commentData;
+    if (commentTag > 0) {
+      commentTag--;
+    }
+    this.setCommentClass(comments);
+    this.setState({ commentTag: commentTag });
+  }
+
+  setCommentClass(comments){
+    commentNextClass = commentTag === comments.length-1 ? "btn-comment d-none" : "btn-comment";
+    commentBackClass = commentTag === 0 ? "btn-comment d-none" : "btn-comment";
   }
 
   render() {
@@ -278,13 +318,34 @@ export class CodeSpace extends React.Component {
           </Col>
           <Col className="col-10">
             <Card className="card text-light comment-box">
-              <div className="card-body pb-0">
+              <div className="card-body pb-2 pt-2 pl-2 pr-4">
                 <h5 className="card-title">
                   Notes : <FontAwesomeIcon icon={faBookOpen} />
                 </h5>
-                {this.onComments().map((i) => (
-                  <p>{i.trim(" ")}</p>
-                ))}
+                {console.log(this.state.commentData)}
+                <p>
+                  {this.state.commentData.filter(
+                    (comment, i) => i === commentTag
+                  )}
+                </p>
+                <Row>
+                  <Col className="text-left pr-0">
+                    <Button
+                      className={commentBackClass + " p-0 btn-cor"}
+                      onClick={this.onCommentBack}
+                    >
+                      &#8810;<u>Prev</u>
+                    </Button>
+                  </Col>
+                  <Col className="text-right p-0">
+                    <Button
+                      className={commentNextClass + " p-0 btn-cor"}
+                      onClick={this.onCommentNext}
+                    >
+                      <u>Next</u>&#8811;
+                    </Button>
+                  </Col>
+                </Row>
               </div>
             </Card>
           </Col>

@@ -25,14 +25,30 @@ h3 {
 .card-body {
     background-color: #561E66;
     border-radius: 2px;
-    padding-top: 0.5rem !important;
-    padding-left: 0.5rem !important;
 }
 
 .highlight {
     background-color: #ffc94cd0;
 }
 
+.notes-popover{
+    box-shadow: 0 4px 4px 0 #7b1db970 !important;
+    border:2px solid white !important;
+    
+}
+
+.btn-comment{
+    background-color: #561E66 !important;
+    color: white;
+}
+
 /* .not-highlight {
     background-color: white;
 } */
+
+.btn-cor:focus{
+    outline:none !important;
+    border:none !important;
+    box-shadow:none !important;
+
+}

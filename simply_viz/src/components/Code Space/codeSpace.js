@@ -33,6 +33,8 @@ var dataTypes = ["integer", "float", "boolean", "string", "character"];
 var commentTag = 0;
 var commentNextClass = "btn-comment";
 var commentBackClass = "btn-comment d-none";
+var functionList = [];
+var popoverClass = "d-none";
 
 export class CodeSpace extends React.Component {
   constructor(props) {
@@ -74,6 +76,7 @@ export class CodeSpace extends React.Component {
       vizData: this.props.getVizData,
       commentData: comments.mainFunc.split(".").filter((i) => i !== ""),
       commentTag: 0,
+      popoverClass: "popover d-none",
     };
 
     repeat = 0;
@@ -85,8 +88,11 @@ export class CodeSpace extends React.Component {
     this.onComments = this.onComments.bind(this);
     this.onCommentNext = this.onCommentNext.bind(this);
     this.onCommentBack = this.onCommentBack.bind(this);
+    this.onClickNo = this.onClickNo.bind(this);
+    this.onClickYes = this.onClickYes.bind(this);
 
     this.mapCodeOrder();
+    this.getFunctionList();
   }
 
   mapCodeOrder() {
@@ -100,29 +106,34 @@ export class CodeSpace extends React.Component {
     next = codeOrder.indexOf(currentLine);
     back = next;
     //console.log(codeOrder);
-    
   }
 
   onClickNext() {
-    //console.log(next);
     if (next < codeOrder.length - 1) {
       next++;
       back = next;
       currentLine = codeOrder[next];
-      console.log(next);
-      console.log(codeOrder[next]);
 
       if (codeOrder[next] !== codeOrder[next - 1]) {
         repeat = 0;
       } else {
         repeat++;
       }
+      this.setPopoverClass(currentLine, "next");
     }
-    commentTag = 0;
 
-    this.onComments();
-    this.onVisualizeData(currentLine, repeat);
-    this.setState({ currentLine: currentLine, commentTag: commentTag });
+    if (popoverClass !== "popover") {
+      commentTag = 0;
+      this.onComments();
+      this.onVisualizeData(currentLine, repeat);
+      this.setState({
+        currentLine: currentLine,
+        commentTag: commentTag,
+        popoverClass: popoverClass,
+      });
+    } else {
+      this.setState({ popoverClass: popoverClass });
+    }
   }
 
   onClickBack() {
@@ -146,12 +157,23 @@ export class CodeSpace extends React.Component {
       }
 
       //console.log("current line: " + currentLine);
+      this.setPopoverClass(currentLine, "back");
     }
-    commentTag = 0;
 
-    this.onComments();
-    this.setState({ currentLine: currentLine, commentTag: commentTag });
-    this.onVisualizeData(currentLine, repeat);
+    if (popoverClass !== "popover") {
+      commentTag = 0;
+
+      this.onComments();
+      this.setState({
+        currentLine: currentLine,
+        commentTag: commentTag,
+        popoverClass: popoverClass,
+      });
+      this.onVisualizeData(currentLine, repeat);
+    } else {
+      this.setState({ popoverClass: popoverClass });
+    }
+  
   }
 
   onClickStop() {
@@ -214,24 +236,16 @@ export class CodeSpace extends React.Component {
     var commentData = "";
     var funcName = "";
 
-    /* if (code[line].includes("function")) {
-      commentData = comments.functions;
-      funcName = code[line].slice(
-        code[line].lastIndexOf("function") + 9,
-        code[line].lastIndexOf("in:") - 1
-      );
-      commentData += comments.insideFunctions + funcName;
-    } else  */
-    if(line !== 0){
-      if(code[line-1].includes("function")){
-        funcName = code[line-1].slice(
-          code[line-1].lastIndexOf("function") + 9,
-          code[line-1].lastIndexOf("in:") - 1
+    if (line !== 0) {
+      if (code[line - 1].includes("function")) {
+        funcName = code[line - 1].slice(
+          code[line - 1].lastIndexOf("function") + 9,
+          code[line - 1].lastIndexOf("in:") - 1
         );
         commentData = comments.insideFunctions + funcName + ".";
       }
     }
-    
+
     if (code[line].includes("if") || code[line].includes("else")) {
       commentData += comments.conditions;
     } else if (code[line].includes("repeat")) {
@@ -248,7 +262,11 @@ export class CodeSpace extends React.Component {
       for (var i in dataTypes) {
         if (code[line].includes(dataTypes[i])) {
           commentData +=
-            comments.variables + " This variables is a " + dataTypes[i] +". " + comments.varTable;
+            comments.variables +
+            " This variables is a " +
+            dataTypes[i] +
+            ". " +
+            comments.varTable;
           break;
         }
       }
@@ -256,19 +274,19 @@ export class CodeSpace extends React.Component {
     var render = commentData.split(".").filter((i) => i !== "");
     this.setCommentClass(render);
 
-    this.setState({commentData: render});
+    this.setState({ commentData: render });
   }
 
   onCommentNext() {
     console.log(commentTag);
     var comments = this.state.commentData;
-    if(commentTag !== comments.length-1){
+    if (commentTag !== comments.length - 1) {
       commentTag++;
     }
     this.setCommentClass(comments);
-    this.setState({commentTag: commentTag});
+    this.setState({ commentTag: commentTag });
   }
-  
+
   onCommentBack() {
     var comments = this.state.commentData;
     if (commentTag > 0) {
@@ -278,9 +296,101 @@ export class CodeSpace extends React.Component {
     this.setState({ commentTag: commentTag });
   }
 
-  setCommentClass(comments){
-    commentNextClass = commentTag === comments.length-1 ? "btn-comment d-none" : "btn-comment";
+  setCommentClass(comments) {
+    commentNextClass =
+      commentTag === comments.length - 1 ? "btn-comment d-none" : "btn-comment";
     commentBackClass = commentTag === 0 ? "btn-comment d-none" : "btn-comment";
+  }
+
+  setPopoverClass(l, flag) {
+    if(flag === "next"){
+      var line = codeOrder[codeOrder.indexOf(l) + 1];
+      for (var i = 0; i < functionList.length - 1; i++) {
+        if (
+          l <= functionList[i].endLine &&
+          line >= functionList[i + 1].startLine
+        ) {
+          popoverClass = "popover";
+          break;
+        } else {
+          popoverClass = "popover d-none";
+        }
+      }
+    }
+    else if(flag === "back"){
+      var line =codeOrder[codeOrder.indexOf(l) - 1];
+      for(var i=1; i<functionList.length; i++){
+        //if()
+      }
+    }
+  }
+
+  getFunctionList() {
+    var code = this.state.code;
+    var count = 0;
+    functionList = [];
+
+    for (var l in code) {
+      if (code[l].includes("function ")) {
+        functionList.push({
+          name: code[l].slice(
+            code[l].lastIndexOf("function") + 9,
+            code[l].lastIndexOf("in:") - 1
+          ),
+          startLine: l,
+          endLine: 0,
+        });
+
+        count++;
+      }
+    }
+
+    for (var i = 0; i < count; i++) {
+      if (i !== count - 1) {
+        functionList[i].endLine = functionList[i + 1].startLine - 1;
+      } else {
+        functionList[i].endLine = code.length - 1;
+      }
+    }
+    console.log(functionList);
+  }
+
+  onClickNo() {
+    popoverClass = "popover d-none";
+    this.setState({ popoverClass: popoverClass });
+  }
+
+  onClickYes(flag) {
+    popoverClass = "popover d-none";
+    this.onSkipFunction(flag);
+    this.setState({ popoverClass: popoverClass });
+  }
+
+  onSkipFunction(flag) {
+    var func = 0;
+    for (var i = 0; i < functionList.length - 1; i++) {
+      if (
+        currentLine >= functionList[i].startLine &&
+        currentLine <= functionList[i].endLine
+      ) {
+        func = i;
+        break;
+      }
+    }
+    if (flag === "next") {
+      var newLine = codeOrder
+        .slice(codeOrder.indexOf(currentLine) + 1)
+        .filter((i) => i < functionList[func].endLine)[0];
+      next = codeOrder.indexOf(newLine) - 1;
+      this.onClickNext();
+    } else if (flag === "back") {
+      var newLineList = codeOrder
+        .slice(0, codeOrder.indexOf(currentLine))
+        .filter((i) => i > functionList[func].startLine);
+      var newLine = newLineList[newLineList.length-1];
+      back = codeOrder.indexOf(newLine) + 1;
+      this.onClickBack();
+    }
   }
 
   render() {
@@ -318,11 +428,42 @@ export class CodeSpace extends React.Component {
             </Button>
           </Col>
           <Col>
-            <Button className="btn btn-primary mb-3" onClick={this.onClickNext}>
-              <FontAwesomeIcon icon={faStepForward} />
-            </Button>
+            <OverlayTrigger
+              trigger="click"
+              placement="right"
+              overlay={
+                <Popover id="popover-basic" className={popoverClass}>
+                  <Popover.Title>
+                    <strong>Entering a new function</strong>
+                  </Popover.Title>
+                  <Popover.Content>
+                    The next line goes into a new function. Do you want to skip
+                    it?
+                    <br />
+                    <Row>
+                      <Col>
+                        <Button onClick={() => this.onClickYes("next")}>
+                          Yes
+                        </Button>
+                      </Col>
+                      <Col>
+                        <Button onClick={this.onClickNo}>No</Button>
+                      </Col>
+                    </Row>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <Button
+                className="btn btn-primary mb-3"
+                onClick={this.onClickNext}
+              >
+                <FontAwesomeIcon icon={faStepForward} />
+              </Button>
+            </OverlayTrigger>
           </Col>
         </Row>
+
         <Row>
           <Col className="col-2">
             <img className="img-alien" src={alien} alt="alien"></img>

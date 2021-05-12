@@ -16,7 +16,9 @@ import {
   faStepForward,
   faPlay,
   faBookOpen,
-  faBackward,
+  faExclamationCircle,
+  faFastForward,
+  faFastBackward,
 } from "@fortawesome/free-solid-svg-icons";
 
 var data = require("./assets/code.json");
@@ -34,7 +36,11 @@ var commentTag = 0;
 var commentNextClass = "btn-comment";
 var commentBackClass = "btn-comment d-none";
 var functionList = [];
-var popoverClass = "d-none";
+var popoverClass = {
+  all: "d-none",
+  next: "disabled",
+  back: "disabled",
+};
 
 export class CodeSpace extends React.Component {
   constructor(props) {
@@ -76,7 +82,7 @@ export class CodeSpace extends React.Component {
       vizData: this.props.getVizData,
       commentData: comments.mainFunc.split(".").filter((i) => i !== ""),
       commentTag: 0,
-      popoverClass: "popover d-none",
+      popoverClass: "d-none",
     };
 
     repeat = 0;
@@ -88,8 +94,8 @@ export class CodeSpace extends React.Component {
     this.onComments = this.onComments.bind(this);
     this.onCommentNext = this.onCommentNext.bind(this);
     this.onCommentBack = this.onCommentBack.bind(this);
-    this.onClickNo = this.onClickNo.bind(this);
-    this.onClickYes = this.onClickYes.bind(this);
+    this.onSkipFunction = this.onSkipFunction.bind(this);
+    this.setPopoverClass = this.setPopoverClass.bind(this);
 
     this.mapCodeOrder();
     this.getFunctionList();
@@ -119,21 +125,17 @@ export class CodeSpace extends React.Component {
       } else {
         repeat++;
       }
-      this.setPopoverClass(currentLine, "next");
+      //]this.setPopoverClass(currentLine, "next");
     }
+    commentTag = 0;
+    this.onComments();
+    this.onVisualizeData(currentLine, repeat);
 
-    if (popoverClass !== "popover") {
-      commentTag = 0;
-      this.onComments();
-      this.onVisualizeData(currentLine, repeat);
-      this.setState({
-        currentLine: currentLine,
-        commentTag: commentTag,
-        popoverClass: popoverClass,
-      });
-    } else {
-      this.setState({ popoverClass: popoverClass });
-    }
+    this.setState({
+      currentLine: currentLine,
+      commentTag: commentTag,
+      popoverClass: popoverClass,
+    });
   }
 
   onClickBack() {
@@ -157,23 +159,17 @@ export class CodeSpace extends React.Component {
       }
 
       //console.log("current line: " + currentLine);
-      this.setPopoverClass(currentLine, "back");
+      //this.setPopoverClass(currentLine, "back");
     }
+    commentTag = 0;
 
-    if (popoverClass !== "popover") {
-      commentTag = 0;
-
-      this.onComments();
-      this.setState({
-        currentLine: currentLine,
-        commentTag: commentTag,
-        popoverClass: popoverClass,
-      });
-      this.onVisualizeData(currentLine, repeat);
-    } else {
-      this.setState({ popoverClass: popoverClass });
-    }
-  
+    this.onComments();
+    this.onVisualizeData(currentLine, repeat);
+    this.setState({
+      currentLine: currentLine,
+      commentTag: commentTag,
+      popoverClass: popoverClass,
+    });
   }
 
   onClickStop() {
@@ -278,7 +274,6 @@ export class CodeSpace extends React.Component {
   }
 
   onCommentNext() {
-    console.log(commentTag);
     var comments = this.state.commentData;
     if (commentTag !== comments.length - 1) {
       commentTag++;
@@ -302,27 +297,74 @@ export class CodeSpace extends React.Component {
     commentBackClass = commentTag === 0 ? "btn-comment d-none" : "btn-comment";
   }
 
-  setPopoverClass(l, flag) {
-    if(flag === "next"){
+  setPopoverClass() {
+    var line = currentLine;
+    var nextLine = codeOrder[codeOrder.indexOf(line) + 1];
+    var prevLine = codeOrder[codeOrder.indexOf(line) - 1];
+
+    for (var i = 0; i < functionList.length; i++) {
+      if (i !== functionList.length - 1) {
+        if (
+          line <= functionList[i].endLine &&
+          nextLine >= functionList[i + 1].startLine
+        ) {
+          popoverClass.next = "";
+        } else {
+          popoverClass.next = "disabled";
+        }
+      }
+      if (i > 0) {
+        if (
+          prevLine >= functionList[i].startLine &&
+          line <= functionList[i - 1].endLine
+        ) {
+          popoverClass.back = "";
+        } else {
+          popoverClass.back = "disabled";
+        }
+      }
+      popoverClass.all =
+        popoverClass.next !== "disabled" || popoverClass.back !== "disabled"
+          ? "popover-row"
+          : "d-none";
+    }
+    return popoverClass;
+
+    /* if (flag === "next") {
       var line = codeOrder[codeOrder.indexOf(l) + 1];
       for (var i = 0; i < functionList.length - 1; i++) {
         if (
           l <= functionList[i].endLine &&
           line >= functionList[i + 1].startLine
         ) {
-          popoverClass = "popover";
+          popoverClass.all = "popover-row";
+          popoverClass.next = "";
+          popoverClass.back = "disabled";
           break;
         } else {
-          popoverClass = "popover d-none";
+          popoverClass.all = "d-none";
+          popoverClass.next = "disabled";
+          popoverClass.back = "disabled";
         }
       }
-    }
-    else if(flag === "back"){
-      var line =codeOrder[codeOrder.indexOf(l) - 1];
-      for(var i=1; i<functionList.length; i++){
-        //if()
+    } else if (flag === "back") {
+      var line = codeOrder[codeOrder.indexOf(l) - 1];
+      for (var i = 1; i < functionList.length; i++) {
+        if (
+          line >= functionList[i].startLine &&
+          l <= functionList[i - 1].endLine
+        ) {
+          popoverClass.all = "popover-row";
+          popoverClass.next = "disabled";
+          popoverClass.back = "";
+          break;
+        } else {
+          popoverClass.all = "d-none";
+          popoverClass.next = "disabled";
+          popoverClass.back = "disabled";
+        }
       }
-    }
+    } */
   }
 
   getFunctionList() {
@@ -352,18 +394,7 @@ export class CodeSpace extends React.Component {
         functionList[i].endLine = code.length - 1;
       }
     }
-    console.log(functionList);
-  }
-
-  onClickNo() {
-    popoverClass = "popover d-none";
-    this.setState({ popoverClass: popoverClass });
-  }
-
-  onClickYes(flag) {
-    popoverClass = "popover d-none";
-    this.onSkipFunction(flag);
-    this.setState({ popoverClass: popoverClass });
+    //console.log(functionList);
   }
 
   onSkipFunction(flag) {
@@ -385,12 +416,15 @@ export class CodeSpace extends React.Component {
       this.onClickNext();
     } else if (flag === "back") {
       var newLineList = codeOrder
-        .slice(0, codeOrder.indexOf(currentLine))
+        .slice(0, codeOrder.indexOf(currentLine) - 1)
         .filter((i) => i > functionList[func].startLine);
-      var newLine = newLineList[newLineList.length-1];
+      console.log(newLineList);
+      var newLine = newLineList[newLineList.length - 1];
       back = codeOrder.indexOf(newLine) + 1;
       this.onClickBack();
     }
+    var pClass = this.setPopoverClass();
+    this.setState({ popoverClass: pClass });
   }
 
   render() {
@@ -409,7 +443,7 @@ export class CodeSpace extends React.Component {
         </Row>
 
         <Row>
-          <Col className="flex-end">
+          <Col>
             <Button className="btn btn-primary mb-3" onClick={this.onClickBack}>
               <FontAwesomeIcon icon={faStepBackward} />
             </Button>
@@ -428,39 +462,76 @@ export class CodeSpace extends React.Component {
             </Button>
           </Col>
           <Col>
-            <OverlayTrigger
-              trigger="click"
-              placement="right"
-              overlay={
-                <Popover id="popover-basic" className={popoverClass}>
-                  <Popover.Title>
-                    <strong>Entering a new function</strong>
-                  </Popover.Title>
-                  <Popover.Content>
-                    The next line goes into a new function. Do you want to skip
-                    it?
-                    <br />
-                    <Row>
-                      <Col>
-                        <Button onClick={() => this.onClickYes("next")}>
-                          Yes
-                        </Button>
-                      </Col>
-                      <Col>
-                        <Button onClick={this.onClickNo}>No</Button>
-                      </Col>
-                    </Row>
-                  </Popover.Content>
-                </Popover>
-              }
+            <Button className="btn btn-primary mb-3" onClick={this.onClickNext}>
+              <FontAwesomeIcon icon={faStepForward} />
+            </Button>
+          </Col>
+        </Row>
+        <Row className={this.setPopoverClass().all}>
+          <Col></Col>
+          <Col>
+            <Button
+              className={this.setPopoverClass().back + " btn btn-primary mb-3"}
+              onClick={() => this.onSkipFunction("back")}
             >
-              <Button
-                className="btn btn-primary mb-3"
-                onClick={this.onClickNext}
-              >
-                <FontAwesomeIcon icon={faStepForward} />
-              </Button>
-            </OverlayTrigger>
+              <FontAwesomeIcon icon={faFastBackward} />
+            </Button>
+          </Col>
+          <Col>
+            <Button
+              className={this.setPopoverClass().next + " btn btn-primary mb-3"}
+              onClick={() => this.onSkipFunction("next")}
+            >
+              <FontAwesomeIcon icon={faFastForward} />
+            </Button>
+          </Col>
+          <Col>
+            <div className="fade-animation">
+              <div className="popup-div">
+                <Row className="mr-2 ml-2">
+                  <Col className="text-left pl-0 mt-0 pt-1">
+                    <FontAwesomeIcon
+                      icon={faExclamationCircle}
+                      className="mr-2"
+                    />
+                    <strong>Warning: New Function</strong>
+                  </Col>
+                </Row>
+
+                <Row className="mr-2 ml-2">
+                  <p className="mb-0 pb-2">
+                    If you click
+                    {popoverClass.next === "" ? (
+                      <FontAwesomeIcon
+                        icon={faStepForward}
+                        className="ml-2 mr-2"
+                      />
+                    ) : (
+                      <FontAwesomeIcon
+                        icon={faStepBackward}
+                        className="ml-2 mr-2"
+                      />
+                    )}
+                    you will enter
+                    <br /> a new function.
+                    <br />
+                    Click
+                    {popoverClass.next === "" ? (
+                      <FontAwesomeIcon
+                        icon={faFastForward}
+                        className="ml-2 mr-2"
+                      />
+                    ) : (
+                      <FontAwesomeIcon
+                        icon={faFastBackward}
+                        className="ml-2 mr-2"
+                      />
+                    )}
+                    to skip!
+                  </p>
+                </Row>
+              </div>
+            </div>
           </Col>
         </Row>
 
@@ -474,11 +545,10 @@ export class CodeSpace extends React.Component {
                 <h5 className="card-title">
                   Notes : <FontAwesomeIcon icon={faBookOpen} />
                 </h5>
-                {console.log(this.state.commentData)}
                 <p>
-                  {this.state.commentData.filter(
-                    (comment, i) => i === commentTag
-                  )}
+                  {this.state.commentData
+                    .filter((comment, i) => i === commentTag)
+                  }
                 </p>
                 <Row>
                   <Col className="text-left pr-0">

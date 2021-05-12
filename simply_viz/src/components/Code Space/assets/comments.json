@@ -10,5 +10,4 @@
     "prints": "Sometimes we need to display some data to the screen for the user to see. In 'Simply', we use a 'display' statement to do this. Check the 'Display' box to see what will appear on the screen when you finally run this program.",
     "externals": "Sometimes we can’t write all the instructions we need inside our program. When that happens we can get some other files to help us. These files are called external libraries. Check the 'External Libraries' box to see what files we are using in this program.",
     "return": "A 'return' statement tells a function what it should output. The data type of the return value of a function should always match the type defined by the function's 'out' parameter. If you click the 'Next' button, you will see the updated value in the Variables and Constants table of the calling function."
-
 }

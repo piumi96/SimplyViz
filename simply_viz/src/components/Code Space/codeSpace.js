@@ -52,6 +52,7 @@ export class CodeSpace extends React.Component {
         "integer a = 3;",
         "integer b = 4;",
         "integer sum = 0;",
+        /* "list: integer arr = [1,2,3,4,5];", */
         "if(a<b){",
         "sum = add(a,b);",
         "}",
@@ -111,7 +112,6 @@ export class CodeSpace extends React.Component {
     });
     next = codeOrder.indexOf(currentLine);
     back = next;
-    //console.log(codeOrder);
   }
 
   onClickNext() {
@@ -125,7 +125,6 @@ export class CodeSpace extends React.Component {
       } else {
         repeat++;
       }
-      //]this.setPopoverClass(currentLine, "next");
     }
     commentTag = 0;
     this.onComments();
@@ -329,42 +328,6 @@ export class CodeSpace extends React.Component {
           : "d-none";
     }
     return popoverClass;
-
-    /* if (flag === "next") {
-      var line = codeOrder[codeOrder.indexOf(l) + 1];
-      for (var i = 0; i < functionList.length - 1; i++) {
-        if (
-          l <= functionList[i].endLine &&
-          line >= functionList[i + 1].startLine
-        ) {
-          popoverClass.all = "popover-row";
-          popoverClass.next = "";
-          popoverClass.back = "disabled";
-          break;
-        } else {
-          popoverClass.all = "d-none";
-          popoverClass.next = "disabled";
-          popoverClass.back = "disabled";
-        }
-      }
-    } else if (flag === "back") {
-      var line = codeOrder[codeOrder.indexOf(l) - 1];
-      for (var i = 1; i < functionList.length; i++) {
-        if (
-          line >= functionList[i].startLine &&
-          l <= functionList[i - 1].endLine
-        ) {
-          popoverClass.all = "popover-row";
-          popoverClass.next = "disabled";
-          popoverClass.back = "";
-          break;
-        } else {
-          popoverClass.all = "d-none";
-          popoverClass.next = "disabled";
-          popoverClass.back = "disabled";
-        }
-      }
-    } */
   }
 
   getFunctionList() {

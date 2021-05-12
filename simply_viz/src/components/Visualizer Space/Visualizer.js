@@ -10,14 +10,8 @@ import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import TabContent from "react-bootstrap/TabContent";
 
-var imports = [];
-var functions = [];
-var variables = [];
-var conditions = [];
-var traversed = [];
-var printData = [];
+var imports, functions, variables, conditions, traversed, printData, loops, listData, globals = [];
 var classList;
-var loops = [];
 var dataTypes = ["integer", "float", "boolean", "string", "character"];
 var activeTab = 0;
 
@@ -48,6 +42,8 @@ export class Visualizer extends React.Component {
     this.getClassName = this.getClassName.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
     this.switchTab = this.switchTab.bind(this);
+    this.getLists = this.getLists.bind(this);
+    this.getGlobals = this.getGlobals.bind(this);
 
     this.getFunctions();
     this.switchTab();
@@ -168,6 +164,26 @@ export class Visualizer extends React.Component {
     return imports;
   }
 
+  getGlobals(){
+    globals = [];
+    var code = this.state.code;
+    var type = "";
+
+    /* for(var i in code){
+      if(code[i].includes("global ")){
+        var name = code[i].slice(code[i].lastIndexOf("global")+6, code[i].lastIndexOf("=")).trim(" ");
+        for(var t in dataTypes){
+          if(code[i].includes(dataTypes[t])){
+            type = dataTypes[t];
+          }
+        }
+        
+
+      }
+    } */
+    
+  }
+
   getFunctions() {
     functions = [];
     var code = this.state.code;
@@ -281,7 +297,7 @@ export class Visualizer extends React.Component {
     var type = [];
     for (var l in code) {
       for (var t in dataTypes) {
-        if (code[l].includes(dataTypes[t]) && l > 0) {
+        if (code[l].includes(dataTypes[t]) && l > 0 && !code[l].includes("global")) {
           type.push({
             line: l,
             type: dataTypes[t],
@@ -421,6 +437,62 @@ export class Visualizer extends React.Component {
     return render;
   }
 
+  getLists(){
+    listData = [];
+    var code = this.state.code;
+
+    for(var i in code){
+      if(code[i].includes("list")){
+        var name = code[i].slice(code[i].lastIndexOf("list:"), code[i].lastIndexOf("=")).trim(" ");
+        var type = "";
+
+        for(var t in dataTypes){
+          if(name.includes(dataTypes[t])){
+            type = dataTypes[t];
+            name = name.slice(name.lastIndexOf(type)+type.length).trim(" ");
+            break;
+          }
+        }
+
+        var values = code[i].slice(code[i].lastIndexOf("[")+1, code[i].lastIndexOf("]")).split(",");
+
+        var data = {
+          line: i,
+          name: name,
+          type: type,
+          values: values
+        };
+
+        for (var j = 0; j < functions.length; j++) {
+          if (j < functions.length - 1) {
+            if (i > functions[j].line && i < functions[j + 1].line) {
+              listData.push({
+                functionLine: functions[j].line,
+                functionName: functions[j].name,
+                data: data,
+              });
+            }
+          } else if (j === functions.length - 1 && i > functions[j].line) {
+            listData.push({
+              functionLine: functions[j].line,
+              functionName: functions[j].name,
+              data: data,
+            });
+          }
+        }
+      }
+    }
+
+    var render = [];
+    for (var l in listData) {
+      if (traversed.indexOf(parseInt(listData[l].data.line)) !== -1) {
+        render.push(listData[l]);
+      }
+    }
+    return render;
+
+  }
+
   getClassName() {
     var funcClass,
       varClass,
@@ -538,8 +610,11 @@ export class Visualizer extends React.Component {
           </Col>
         </Row>
         <Row>
-          <Col className="col-12">
-            <div className="p text-center py-1 mb-3 p-box">
+          <Col className="col-6">
+            <div className="p text-center mb-3 p-box">Global Variables:</div>
+          </Col>
+          <Col className="col-5">
+            <div className="p text-center mb-3 p-box">
               External Libraries:
               {this.getExternals().map((lib, i) => (
                 <p className={classList.libClass + " mb-0"} key={i}>
@@ -548,10 +623,12 @@ export class Visualizer extends React.Component {
               ))}
             </div>
           </Col>
+
+          <Col className="col-1"></Col>
         </Row>
 
         <div>
-          <p className="h4 text-center">Program Area:</p>
+          <p className="h4 text-center">Function Area:</p>
           <Tabs
             activeKey={activeTab}
             onSelect={(key) => this.handleSelect(key)}
@@ -635,9 +712,9 @@ export class Visualizer extends React.Component {
                                     </th>
                                   </tr>
                                   <tr>
-                                    <td colspan="2">Data type</td>
-                                    <td colspan="2">Name</td>
-                                    <td colspan="2">Value</td>
+                                    <td colSpan="2">Data type</td>
+                                    <td colSpan="2">Name</td>
+                                    <td colSpan="2">Value</td>
                                   </tr>
                                 </thead>
                                 <tbody className="table-var">
@@ -652,6 +729,42 @@ export class Visualizer extends React.Component {
                                         </tr>
                                       ))
                                     )}
+                                  {this.getLists()
+                                    .filter((f) => f.functionName === func.name)
+                                    .map((line, i) => (
+                                      <tr key={i}>
+                                        <td colspan="2">
+                                          list: {line.data.type}
+                                        </td>
+                                        <td colspan="2">{line.data.name}</td>
+                                        <td colspan="2">
+                                          <tr>
+                                            <td className="border-0"></td>
+                                            {line.data.values.map((value) => (
+                                              <td className="list-data pl-2 pr-2">
+                                                {value}
+                                              </td>
+                                            ))}
+                                          </tr>
+                                          <tr>
+                                            <td className="border-0">Index:</td>
+                                            {line.data.values.map(
+                                              (values, v) => (
+                                                <td className="border-0 pl-2 pr-2">
+                                                  {v}
+                                                </td>
+                                              )
+                                            )}
+                                          </tr>
+                                          {/* {line.data.values.map((value, l) => (
+                                            <tr>
+                                              <td colspan="1">{l}:</td>
+                                              <td colspan="1">{value}</td>
+                                            </tr>
+                                          ))} */}
+                                        </td>
+                                      </tr>
+                                    ))}
                                 </tbody>
                               </Table>
                             </div>

@@ -23,9 +23,10 @@ td {
 }
 
 .table-if {
-  background-color: rgba(240, 73, 99, 0.1);
+  background-color: rgba(47, 96, 153, 0.1);
   text-align: left;
-  color: #f04963;
+  color: rgba(47, 96, 153);
+  border:white !important;
 }
 
 .table-var {
@@ -39,16 +40,19 @@ td {
   background-color: rgba(125, 31, 187, 0.1);
   text-align: left;
   color: #B974E9;
+  border:white !important;
 }
 
 .table-func {
   background-color: rgba(34, 46, 106, 0.1);
   text-align: left;
   color: #222e6a;
+  border:white !important;
 }
 
 .table-if-head {
-  background-color: rgba(240, 73, 99);
+  /* background-color: rgba(240, 73, 99); */
+  background-color: rgba(47, 96, 153);
   text-align: left;
   color: white;
 }
@@ -103,6 +107,12 @@ table{
  border:1px solid white;
 }
 
+.list-data {
+  background-color: #561E66;
+  color: white;
+  border-radius: 2px;
+}
+
 .img-rocket{
     width:5rem;
     height:11rem;
@@ -110,6 +120,7 @@ table{
     margin-left:-20px;
     -webkit-filter: drop-shadow(1px 1px 1px #000000e7);
     -webkit-filter: drop-shadow(12px 12px 25px #93c000da);
+    position: absolute;
 }
 
 /* background-color: rgba(1, 148, 157, 0.1); */

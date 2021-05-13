@@ -10,7 +10,16 @@ import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import TabContent from "react-bootstrap/TabContent";
 
-var imports, functions, variables, conditions, traversed, printData, loops, listData, globals = [];
+var imports = [],
+  functions = [],
+  variables = [],
+  conditions = [],
+  traversed = [],
+  printData = [],
+  loops = [],
+  listData = [],
+  globals = [],
+  locals = [];
 var classList;
 var dataTypes = ["integer", "float", "boolean", "string", "character"];
 var activeTab = 0;
@@ -43,7 +52,6 @@ export class Visualizer extends React.Component {
     this.handleSelect = this.handleSelect.bind(this);
     this.switchTab = this.switchTab.bind(this);
     this.getLists = this.getLists.bind(this);
-    this.getGlobals = this.getGlobals.bind(this);
 
     this.getFunctions();
     this.switchTab();
@@ -53,7 +61,7 @@ export class Visualizer extends React.Component {
   handleSelect(key) {
     activeTab = key;
     //console.log(activeTab);
-    this.setState({activeTab : activeTab});
+    this.setState({ activeTab: activeTab });
   }
 
   intializeData() {
@@ -164,26 +172,6 @@ export class Visualizer extends React.Component {
     return imports;
   }
 
-  getGlobals(){
-    globals = [];
-    var code = this.state.code;
-    var type = "";
-
-    /* for(var i in code){
-      if(code[i].includes("global ")){
-        var name = code[i].slice(code[i].lastIndexOf("global")+6, code[i].lastIndexOf("=")).trim(" ");
-        for(var t in dataTypes){
-          if(code[i].includes(dataTypes[t])){
-            type = dataTypes[t];
-          }
-        }
-        
-
-      }
-    } */
-    
-  }
-
   getFunctions() {
     functions = [];
     var code = this.state.code;
@@ -228,7 +216,7 @@ export class Visualizer extends React.Component {
     }
     //console.log(functions);
     this.intializeData();
-   
+
     return functions;
   }
 
@@ -295,15 +283,41 @@ export class Visualizer extends React.Component {
     var line = this.state.lineNumber;
     var code = this.state.code;
     var type = [];
+    globals = [];
     for (var l in code) {
       for (var t in dataTypes) {
-        if (code[l].includes(dataTypes[t]) && l > 0 && !code[l].includes("global")) {
+        if (code[l].includes(dataTypes[t]) && l > 0) {
           type.push({
             line: l,
             type: dataTypes[t],
           });
           break;
         }
+      }
+
+      if (code[l].includes("global ")) {
+        var gtype = "";
+        var gval = code[l]
+          .slice(code[l].lastIndexOf("=") + 1, code[l].lastIndexOf(";"))
+          .trim(" ");
+        var name = code[l]
+          .slice(code[l].lastIndexOf("global") + 6, code[l].lastIndexOf("="))
+          .trim(" ");
+        for (var t in dataTypes) {
+          if (name.includes(dataTypes[t])) {
+            name = name
+              .slice(name.indexOf(dataTypes[t]) + dataTypes[t].length)
+              .trim(" ");
+            gtype = dataTypes[t];
+          }
+        }
+
+        globals.push({
+          name: name,
+          type: gtype,
+          value: parseInt(gval),
+          line: l,
+        });
       }
     }
 
@@ -320,11 +334,19 @@ export class Visualizer extends React.Component {
       var data = [];
       for (var key in codeData) {
         var count = 0;
-        data.push({
-          name: key,
-          type: typeRender[count],
-          value: codeData[key],
-        });
+        if (
+          !code[line].includes("global") &&
+          globals.filter((i) => i.name === key).length === 0
+        ) {
+          data.push({
+            name: key,
+            type: typeRender[count],
+            value: codeData[key],
+          });
+        } else if (globals.filter((i) => i.name === key).length !== 0) {
+          globals.filter((i) => i.name === key)[0].value = codeData[key];
+          globals.filter((i) => i.name === key)[0].type = typeRender[count];
+        }
         count++;
       }
 
@@ -338,7 +360,22 @@ export class Visualizer extends React.Component {
         }
       }
     }
-    return variables;
+
+    /* var gRender = [];
+    for (var g in globals) {
+       console.log(globals[g]);
+      if (traversed.lastIndexOf(parseInt(globals[g].line)) !== -1) {
+        gRender.push(globals[g]);
+      }
+    }
+    console.log(gRender); */
+
+    var render = {
+      variables: variables,
+      globals: globals,
+    };
+    console.log(render);
+    return render;
   }
 
   getLoops() {
@@ -437,30 +474,34 @@ export class Visualizer extends React.Component {
     return render;
   }
 
-  getLists(){
+  getLists() {
     listData = [];
     var code = this.state.code;
 
-    for(var i in code){
-      if(code[i].includes("list")){
-        var name = code[i].slice(code[i].lastIndexOf("list:"), code[i].lastIndexOf("=")).trim(" ");
+    for (var i in code) {
+      if (code[i].includes("list")) {
+        var name = code[i]
+          .slice(code[i].lastIndexOf("list:"), code[i].lastIndexOf("="))
+          .trim(" ");
         var type = "";
 
-        for(var t in dataTypes){
-          if(name.includes(dataTypes[t])){
+        for (var t in dataTypes) {
+          if (name.includes(dataTypes[t])) {
             type = dataTypes[t];
-            name = name.slice(name.lastIndexOf(type)+type.length).trim(" ");
+            name = name.slice(name.lastIndexOf(type) + type.length).trim(" ");
             break;
           }
         }
 
-        var values = code[i].slice(code[i].lastIndexOf("[")+1, code[i].lastIndexOf("]")).split(",");
+        var values = code[i]
+          .slice(code[i].lastIndexOf("[") + 1, code[i].lastIndexOf("]"))
+          .split(",");
 
         var data = {
           line: i,
           name: name,
           type: type,
-          values: values
+          values: values,
         };
 
         for (var j = 0; j < functions.length; j++) {
@@ -490,7 +531,6 @@ export class Visualizer extends React.Component {
       }
     }
     return render;
-
   }
 
   getClassName() {
@@ -499,7 +539,8 @@ export class Visualizer extends React.Component {
       ifClass,
       printClass,
       loopClass,
-      libClass, 
+      libClass,
+      globalClass,
       inputClass = "table-not-highlight";
     var code = this.state.code;
     var line = this.state.lineNumber;
@@ -523,6 +564,9 @@ export class Visualizer extends React.Component {
       inputClass = code[line].includes("input()")
         ? "table-highlight"
         : "table-not-highlight";
+      globalClass = code[line].includes("global")
+        ? "table-highlight"
+        : "table-not-highlight";
       if (line > 0) {
         varClass =
           codeData[0].Value.length !== 0
@@ -537,10 +581,10 @@ export class Visualizer extends React.Component {
         loop: loopClass,
         print: printClass,
         lib: libClass,
-        input: inputClass
+        input: inputClass,
+        global: globalClass
       };
 
-      
       //console.log(classList);
     }
   }
@@ -579,11 +623,10 @@ export class Visualizer extends React.Component {
     this.props.getVizData(vizData);
   }
  */
-  
 
   render() {
     this.getClassName();
-    
+
     return (
       <div>
         <Row>
@@ -611,7 +654,31 @@ export class Visualizer extends React.Component {
         </Row>
         <Row>
           <Col className="col-6">
-            <div className="p text-center mb-3 p-box">Global Variables:</div>
+            <div className="p text-center mb-3 p-box">
+              Global Variables:
+              <div
+                className={classList.global + " table-responsive table-outer"}
+              >
+                <Table className="table-bordered text-light">
+                  <thead className="table-var-head">
+                    <tr>
+                      <td colSpan="2">Data type</td>
+                      <td colSpan="2">Name</td>
+                      <td colSpan="2">Value</td>
+                    </tr>
+                  </thead>
+                  <tbody className="table-var">
+                    {this.getVariables().globals.map((data, i) => (
+                      <tr key={i}>
+                        <td colspan="2">{data.type}</td>
+                        <td colspan="2">{data.name}</td>
+                        <td colspan="2">{data.value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+            </div>
           </Col>
           <Col className="col-5">
             <div className="p text-center mb-3 p-box">
@@ -626,7 +693,6 @@ export class Visualizer extends React.Component {
 
           <Col className="col-1"></Col>
         </Row>
-
         <div>
           <p className="h4 text-center">Function Area:</p>
           <Tabs
@@ -719,7 +785,9 @@ export class Visualizer extends React.Component {
                                 </thead>
                                 <tbody className="table-var">
                                   {this.getVariables()
-                                    .filter((f) => f.function === func.name)[0]
+                                    .variables.filter(
+                                      (f) => f.function === func.name
+                                    )[0]
                                     .functionData.map((line) =>
                                       line.data.map((data, i) => (
                                         <tr key={i}>

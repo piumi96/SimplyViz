@@ -48,11 +48,13 @@ export class CodeSpace extends React.Component {
 
     this.state = {
       code: [
+        "get io;",
+        "",
+        "global integer a = 3;",
+        "",
         "function main(in: ) out: no {",
-        "integer a = 3;",
         "integer b = 4;",
         "integer sum = 0;",
-        /* "list: integer arr = [1,2,3,4,5];", */
         "if(a<b){",
         "sum = add(a,b);",
         "}",
@@ -62,13 +64,14 @@ export class CodeSpace extends React.Component {
         "display(sum);",
         "}",
         "",
-        "function add(in: integer a, integer b) out: integer {",
-        "return a + b;",
+        "function add(in: integer x, integer y) out: integer {",
+        "return x + y;",
         "}",
         /* "function main(in: ) out: no {",
         "integer a = 3;",
         "integer b = 4;",
         "integer sum = 0;",
+        "list: integer arr = [1,2,3,4,5];",
         "if(a<b){",
         "sum = a + b;",
         "}",
@@ -104,6 +107,13 @@ export class CodeSpace extends React.Component {
 
   mapCodeOrder() {
     codeOrder = [];
+    /* var code = this.state.code;
+    for(var i in code){
+      if(!code[i].includes("function main")){
+        codeOrder.push(parseInt(i));
+      }
+      else break;
+    } */
     data.map((obj) => {
       var line = sourceMap.filter(
         (i) => i.Java === parseInt(obj.Line.slice(9))
@@ -112,6 +122,8 @@ export class CodeSpace extends React.Component {
     });
     next = codeOrder.indexOf(currentLine);
     back = next;
+
+    console.log(codeOrder);
   }
 
   onClickNext() {
